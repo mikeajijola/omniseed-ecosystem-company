@@ -1,0 +1,164 @@
+apiVersion: omniform.org/v1alpha1
+kind: Company
+metadata:
+  id: omniseed_ecosystem
+  name: OmniSeed Ecosystem
+  labels: { instance: production_reference }
+spec:
+  intent: Build, govern, operate, and improve the public OmniSeed Company-as-Code ecosystem.
+  governance:
+    desiredState:
+      repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
+      branch: main
+      path: omniform.yaml
+      changeMode: pull_request
+  stewardship:
+    capability: steward_omniseed_ecosystem
+    realisation: lily_stewardship
+  outcomes:
+    - id: truthful_self_hosting
+      description: OmniSeed can explain with evidence how its own ecosystem company is run.
+  providers:
+    agents: { provider: lily_agent_runtime }
+    skills: { provider: ecosystem_tooling }
+    connectors: { provider: vercel_interface }
+    workflows: { provider: github_protocol }
+    policies: { provider: ecosystem_governance }
+    observations: { provider: ecosystem_observer }
+    memory: { provider: ecosystem_knowledge }
+    identity: { provider: github_identity }
+  capabilities:
+    - id: steward_omniseed_ecosystem
+      name: Steward OmniSeed Ecosystem
+      description: Maintain situational awareness and exercise authorised company-management capabilities in pursuit of approved desired state.
+      autonomy: { mode: recommend }
+      requires:
+        - { id: stewardship_agency, primitiveFamily: agents }
+        - { id: company_reasoning, primitiveFamily: skills }
+        - { id: governed_operations_access, primitiveFamily: connectors }
+        - { id: governed_change_process, primitiveFamily: workflows }
+        - { id: stewardship_authority, primitiveFamily: policies }
+        - { id: company_state_observation, primitiveFamily: observations }
+        - { id: organisational_context, primitiveFamily: memory }
+        - { id: steward_identity, primitiveFamily: identity }
+      realisations: [lily_stewardship]
+    - id: maintain_omniseed_engine
+      name: Maintain OmniSeed Engine
+      requires:
+        - { id: engineering_agency, primitiveFamily: agents }
+        - { id: software_engineering, primitiveFamily: skills }
+        - { id: repository_access, primitiveFamily: connectors }
+        - { id: software_change_manage, primitiveFamily: workflows }
+        - { id: required_review, primitiveFamily: policies }
+        - { id: change_observation, primitiveFamily: observations }
+        - { id: engineering_history, primitiveFamily: memory }
+        - { id: contributor_identity, primitiveFamily: identity }
+      realisations: [engine_development]
+    - id: validate_ecosystem_conformance
+      name: Validate Ecosystem Conformance
+      requires:
+        - { id: conformance_skill, primitiveFamily: skills }
+        - { id: public_repository_access, primitiveFamily: connectors }
+        - { id: conformance_workflow, primitiveFamily: workflows }
+        - { id: invariant_policy, primitiveFamily: policies }
+        - { id: conformance_observation, primitiveFamily: observations }
+      realisations: [public_conformance]
+    - id: operate_omniseed_ecosystem
+      name: Operate OmniSeed Ecosystem
+      description: Give authorised people an optional first-party environment for inspecting and operating the company.
+      requires:
+        - { id: human_operating_interface, primitiveFamily: connectors }
+        - { id: operator_identity, primitiveFamily: identity }
+        - { id: interface_authority, primitiveFamily: policies }
+        - { id: interface_health_observation, primitiveFamily: observations }
+      realisations: [omniseed_os_interface]
+  realisations:
+    - id: lily_stewardship
+      name: Lily reference stewardship
+      capability: steward_omniseed_ecosystem
+      participants:
+        - { resource: lily, role: steward, supplies: [stewardship_agency] }
+        - { resource: stewardship_skills, supplies: [company_reasoning] }
+        - { resource: omniseed_operations, supplies: [governed_operations_access] }
+        - { resource: company_change_workflow, supplies: [governed_change_process] }
+        - { resource: lily_authority, supplies: [stewardship_authority] }
+        - { resource: company_observer, supplies: [company_state_observation] }
+        - { resource: ecosystem_memory, supplies: [organisational_context] }
+        - { resource: lily_identity, supplies: [steward_identity] }
+    - id: engine_development
+      name: Engine development, review, and release
+      capability: maintain_omniseed_engine
+      participants:
+        - { resource: ecosystem_contributors, supplies: [engineering_agency] }
+        - { resource: engineering_skills, supplies: [software_engineering] }
+        - { resource: github_repositories, supplies: [repository_access] }
+        - { resource: github_change_workflow, supplies: [software_change_manage] }
+        - { resource: review_policy, supplies: [required_review] }
+        - { resource: change_observer, supplies: [change_observation] }
+        - { resource: ecosystem_memory, supplies: [engineering_history] }
+        - { resource: contributor_identities, supplies: [contributor_identity] }
+    - id: public_conformance
+      name: Public ecosystem conformance
+      capability: validate_ecosystem_conformance
+      participants:
+        - { resource: conformance_runner, supplies: [conformance_skill] }
+        - { resource: github_repositories, supplies: [public_repository_access] }
+        - { resource: github_conformance_workflow, supplies: [conformance_workflow] }
+        - { resource: invariant_catalogue, supplies: [invariant_policy] }
+        - { resource: conformance_observer, supplies: [conformance_observation] }
+    - id: omniseed_os_interface
+      name: OmniSeed OS human interface
+      capability: operate_omniseed_ecosystem
+      participants:
+        - { resource: omniseed_os, role: human_interface, supplies: [human_operating_interface] }
+        - { resource: operator_identities, supplies: [operator_identity] }
+        - { resource: interface_policy, supplies: [interface_authority] }
+        - { resource: os_observer, supplies: [interface_health_observation] }
+  resources:
+    agents:
+      - id: lily
+        name: Lily
+        offers: [stewardship_agency]
+        risk: high
+        spec:
+          kind: ai_agent
+          organisationalIdentity: lily
+          bootstrap: { company: omniseed_ecosystem, identity: lily }
+          runtime: { providerSelection: lily_agent_runtime, model: runtime_configuration }
+          authority: [company.read, capability.read, company_change.propose]
+      - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency], spec: { kind: people_and_agents } }
+    skills:
+      - { id: stewardship_skills, name: Stewardship Skills, offers: [company_reasoning], spec: { abilities: [inspect, reason, explain, propose, delegate, escalate] } }
+      - { id: engineering_skills, name: Software Engineering Skills, offers: [software_engineering] }
+      - { id: conformance_runner, name: Ecosystem Conformance Runner, offers: [conformance_skill] }
+    connectors:
+      - { id: omniseed_operations, name: Governed OmniSeed Operations, offers: [governed_operations_access] }
+      - { id: github_repositories, name: Public Repository Boundary, offers: [repository_access, public_repository_access] }
+      - { id: omniseed_os, name: OmniSeed OS, offers: [human_operating_interface], spec: { optional: true, deploymentProvider: vercel_interface } }
+    workflows:
+      - { id: company_change_workflow, name: Company Change Workflow, offers: [governed_change_process] }
+      - { id: github_change_workflow, name: GitHub Change Workflow, offers: [software_change_manage] }
+      - { id: github_conformance_workflow, name: GitHub Conformance Workflow, offers: [conformance_workflow] }
+    policies:
+      - { id: lily_authority, name: Lily Authority, offers: [stewardship_authority], spec: { allow: [read, propose], deny: [approve, self_escalate] } }
+      - { id: review_policy, name: Required Review, offers: [required_review], spec: { pullRequestRequired: true } }
+      - { id: invariant_catalogue, name: Ecosystem Invariants, offers: [invariant_policy] }
+      - { id: interface_policy, name: Interface Authority Policy, offers: [interface_authority] }
+    observations:
+      - { id: company_observer, name: Company State Observer, offers: [company_state_observation] }
+      - { id: change_observer, name: Change Observer, offers: [change_observation] }
+      - { id: conformance_observer, name: Conformance Observer, offers: [conformance_observation] }
+      - { id: os_observer, name: OS Observer, offers: [interface_health_observation] }
+    memory:
+      - { id: ecosystem_memory, name: Ecosystem Organisational Memory, offers: [organisational_context, engineering_history] }
+    identity:
+      - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
+      - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
+      - { id: operator_identities, name: Operator Identities, offers: [operator_identity] }
+  operations:
+    - { id: inspect_company, capability: steward_omniseed_ecosystem, description: Inspect desired and observed company state, input: {}, output: {}, mutation: false, permissions: [company.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
+    - { id: get_capability, capability: steward_omniseed_ecosystem, description: Inspect a capability trace, input: {}, output: {}, mutation: false, permissions: [capability.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
+    - { id: propose_company_change, capability: steward_omniseed_ecosystem, description: Propose a PR-governed desired-state change, input: {}, output: {}, mutation: true, permissions: [company_change.propose], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
+    - { id: inspect_company_change, capability: steward_omniseed_ecosystem, description: Inspect company change proposals, input: {}, output: {}, mutation: false, permissions: [company_change.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
+    - { id: approve_company_change, capability: steward_omniseed_ecosystem, description: Approve an exact company change, input: {}, output: {}, mutation: true, permissions: [company_change.approve], approval: required, interfaces: [ui, api, cli, agent] }
+    - { id: apply_company_change, capability: steward_omniseed_ecosystem, description: Submit an approved company change as a pull request, input: {}, output: {}, mutation: true, permissions: [company_change.apply], approval: required, interfaces: [ui, api, cli, agent] }
