@@ -19,14 +19,14 @@ spec:
     - id: truthful_self_hosting
       description: OmniSeed can explain with evidence how its own ecosystem company is run.
   providers:
-    agents: { provider: lily_agent_runtime }
+    agents: { provider: vercel }
     skills: { provider: ecosystem_tooling }
-    connectors: { provider: vercel_interface }
-    workflows: { provider: github_protocol }
+    connectors: { provider: vercel }
+    workflows: { provider: github }
     policies: { provider: ecosystem_governance }
     observations: { provider: ecosystem_observer }
     memory: { provider: ecosystem_knowledge }
-    identity: { provider: github_identity }
+    identity: { provider: github }
   capabilities:
     - id: steward_omniseed_ecosystem
       name: Steward OmniSeed Ecosystem
@@ -124,7 +124,7 @@ spec:
           kind: ai_agent
           organisationalIdentity: lily
           bootstrap: { company: omniseed_ecosystem, identity: lily }
-          runtime: { providerSelection: lily_agent_runtime, model: runtime_configuration }
+          runtime: { providerSelection: vercel, framework: eve, model: runtime_configuration, services: [functions, ai_gateway] }
           authority: [company.read, capability.read, company_change.propose]
       - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency], spec: { kind: people_and_agents } }
     skills:
@@ -134,7 +134,7 @@ spec:
     connectors:
       - { id: omniseed_operations, name: Governed OmniSeed Operations, offers: [governed_operations_access] }
       - { id: github_repositories, name: Public Repository Boundary, offers: [repository_access, public_repository_access] }
-      - { id: omniseed_os, name: OmniSeed OS, offers: [human_operating_interface], spec: { optional: true, deploymentProvider: vercel_interface } }
+      - { id: omniseed_os, name: OmniSeed OS, offers: [human_operating_interface], spec: { optional: true, deploymentProvider: vercel, services: [functions, deployment] } }
     workflows:
       - { id: company_change_workflow, name: Company Change Workflow, offers: [governed_change_process] }
       - { id: github_change_workflow, name: GitHub Change Workflow, offers: [software_change_manage] }
