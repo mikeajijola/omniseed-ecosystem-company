@@ -134,7 +134,7 @@ spec:
           implementation:
             framework: eve
             repository: https://github.com/mikeajijola/omniseed-lily.git
-            revision: fda64dd8d82ef4ce9237b3da6837b817693909c6
+            revision: 6909d3befe09ca51c30746502f2f722e06d8738d
           kind: ai_agent
           organisationalIdentity: lily
           runtime:
