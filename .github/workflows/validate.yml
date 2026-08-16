@@ -1,0 +1,20 @@
+name: Validate desired state
+
+on:
+  pull_request:
+    paths:
+      - omniform.yaml
+      - .github/workflows/validate.yml
+
+permissions:
+  contents: read
+
+jobs:
+  omniform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx --yes @omniseed/omniform@1.0.0-alpha.4 validate omniform.yaml
