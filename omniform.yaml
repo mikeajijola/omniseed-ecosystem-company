@@ -121,20 +121,88 @@ spec:
         offers: [stewardship_agency]
         risk: high
         spec:
+          authority:
+            - company.read
+            - capability.read
+            - company_change.propose
+          bootstrap:
+            company: omniseed_ecosystem
+            credentialReference: OMNISEED_OPERATION_TOKEN
+            identity: lily
+            omniseedEndpoint: https://omniseed-os.vercel.app
+            runtimeModelConfiguration: LILY_MODEL
+          implementation:
+            framework: eve
+            repository: https://github.com/mikeajijola/omniseed-lily.git
+            revision: fda64dd8d82ef4ce9237b3da6837b817693909c6
           kind: ai_agent
           organisationalIdentity: lily
-          bootstrap: { company: omniseed_ecosystem, identity: lily }
-          runtime: { providerSelection: vercel, framework: eve, model: runtime_configuration, services: [functions, ai_gateway] }
-          authority: [company.read, capability.read, company_change.propose]
+          runtime:
+            environment: production
+            expectedEndpoints:
+              health: https://omniseed-lily.vercel.app/health
+              info: https://omniseed-lily.vercel.app/info
+              operation: https://omniseed-lily.vercel.app/agents/lily
+            project: omniseed-lily
+            provider: vercel
+            providerRevision: 4183427086791fb94e507d22c7b0af3a92ba33da
+            secretReferences:
+              - OMNISEED_OPERATION_TOKEN
+              - LILY_SESSION_JWT_SECRET
+              - LILY_RUNTIME_OBSERVATION_TOKEN
+            services:
+              - functions
+              - ai_gateway
       - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency], spec: { kind: people_and_agents } }
     skills:
       - { id: stewardship_skills, name: Stewardship Skills, offers: [company_reasoning], spec: { abilities: [inspect, reason, explain, propose, delegate, escalate] } }
       - { id: engineering_skills, name: Software Engineering Skills, offers: [software_engineering] }
       - { id: conformance_runner, name: Ecosystem Conformance Runner, offers: [conformance_skill] }
     connectors:
-      - { id: omniseed_operations, name: Governed OmniSeed Operations, offers: [governed_operations_access] }
+      - id: omniseed_operations
+        name: Governed OmniSeed Operations
+        offers:
+          - governed_operations_access
+        spec:
+          authentication:
+            credentialReference: OMNISEED_OPERATION_TOKEN
+          companyBinding: omniseed_ecosystem
+          endpoint: https://omniseed-os.vercel.app
+          provider: vercel
+          providerRevision: 4183427086791fb94e507d22c7b0af3a92ba33da
       - { id: github_repositories, name: Public Repository Boundary, offers: [repository_access, public_repository_access] }
-      - { id: omniseed_os, name: OmniSeed OS, offers: [human_operating_interface], spec: { optional: true, deploymentProvider: vercel, services: [functions, deployment] } }
+      - id: omniseed_os
+        name: OmniSeed OS
+        offers:
+          - human_operating_interface
+        spec:
+          companyBinding:
+            companyId: omniseed_ecosystem
+            desiredRevision: 38e3a24851bba02a5bd4e91ab606779851a9c924
+            repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
+          durableState:
+            credentialReferences:
+              - DATABASE_URL
+              - OMNISEED_STATE_TOKEN
+            endpoint: https://omniseed-os.vercel.app/api/state/companies/omniseed_ecosystem/state
+            implementationRevision: 474b63c9f6dcd9050300e82574c237241605b67d
+            provider: neon
+            service: postgresql
+          environment: production
+          expectedEndpoints:
+            company: https://omniseed-os.vercel.app/api/company
+            health: https://omniseed-os.vercel.app/api/health
+            operations: https://omniseed-os.vercel.app
+          optional: false
+          project: omniseed-os
+          provider: vercel
+          providerRevision: 4183427086791fb94e507d22c7b0af3a92ba33da
+          services:
+            - functions
+            - deployment
+          source:
+            repository: https://github.com/mikeajijola/omniseedos.git
+            revision: 474b63c9f6dcd9050300e82574c237241605b67d
     workflows:
       - { id: company_change_workflow, name: Company Change Workflow, offers: [governed_change_process] }
       - { id: github_change_workflow, name: GitHub Change Workflow, offers: [software_change_manage] }
