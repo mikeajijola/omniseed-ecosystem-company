@@ -201,7 +201,7 @@ spec:
           optional: true
           project: omniseed-os
           provider: vercel
-          providerRevision: d6d9cbdc6bbb936ead471aa67c2a06af73bbd96a
+          providerRevision: a2fbf6488683a4435d81544ec879b764b00c8c11
           services:
             - functions
             - deployment
