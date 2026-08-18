@@ -304,7 +304,7 @@ spec:
             product: Omnicede embedded graph memory
             protocol: omniseed.provider.protocol/1.0
             repository: https://github.com/mikeajijola/omnicede.git
-            revision: 20681f2c942c8a6d3bd23b693105992a08e69c3e
+            revision: 914e3434503ec4ae1a911816082b06470daa56a1
           persistence:
             kind: sqlite
             durability: required
@@ -321,7 +321,7 @@ spec:
           projectName: omniseed-ecosystem-runtime
           implementation:
             repository: https://github.com/mikeajijola/omniseed-provider-neon.git
-            revision: b8cc57f9411d0cd52732be267b75d4b1da1188f2
+            revision: 2ad0bfaef3ac17f03397719afdc7cc6e0cded9bc
           consistency: optimistic_concurrency
           credentialReferences: [DATABASE_URL, OMNISEED_STATE_TOKEN]
           product: PostgreSQL
