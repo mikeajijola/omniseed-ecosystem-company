@@ -180,8 +180,11 @@ spec:
         spec:
           companyBinding:
             companyId: omniseed_ecosystem
-            desiredRevision: 38e3a24851bba02a5bd4e91ab606779851a9c924
+            desiredRevision: 492413caa4c7cc076920d30e5b3d4e88209cae39
+            path: omniform.yaml
+            readOnlyInspection: true
             repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
+            stewardActorId: lily
           durableState:
             credentialReferences:
               - DATABASE_URL
@@ -198,14 +201,14 @@ spec:
           optional: true
           project: omniseed-os
           provider: vercel
-          providerRevision: 63b352e9ff0821fa71b6790cde307a10f6f18668
+          providerRevision: e4235995446e8a025c02e434146e16a78e9777dd
           services:
             - functions
             - deployment
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 474b63c9f6dcd9050300e82574c237241605b67d
+            revision: c106b774f4f845e02176eedbab04d3422b01a111
     workflows:
       - { id: company_change_workflow, name: Company Change Workflow, offers: [governed_change_process] }
       - { id: github_change_workflow, name: GitHub Change Workflow, offers: [software_change_manage] }
