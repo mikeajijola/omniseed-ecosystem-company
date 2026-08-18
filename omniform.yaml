@@ -226,7 +226,7 @@ spec:
               - OMNISEED_STATE_TOKEN
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
-            endpoint: https://omniseed-ecosystem-os.vercel.app/api/state/companies/omniseed_ecosystem/state
+            endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
             implementationRevision: 474b63c9f6dcd9050300e82574c237241605b67d
             provider: neon
             service: postgresql
@@ -329,7 +329,7 @@ spec:
     identity:
       - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
       - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
-      - { id: operator_identities, name: Operator Identities, offers: [operator_identity] }
+      - { id: operator_identities, name: Operator Identities, offers: [operator_identity], spec: { authority: [plan.approve] } }
       - { id: reconciler_identity, name: Reconciler Service Identity, provider: github, offers: [reconciler_identity], spec: { product: GitHub Actions OIDC, authority: [company.bind, plan.create, plan.apply, state.reconcile], selfApproval: false } }
   operations:
     - { id: inspect_company, capability: steward_omniseed_ecosystem, description: Inspect desired and observed company state, input: {}, output: {}, mutation: false, permissions: [company.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
