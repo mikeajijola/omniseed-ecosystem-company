@@ -25,7 +25,7 @@ spec:
     workflows: { provider: github }
     policies: { provider: ecosystem_governance }
     observations: { provider: ecosystem_observer }
-    memory: { provider: ecosystem_knowledge }
+    memory: { provider: omnicede }
     identity: { provider: github }
   capabilities:
     - id: steward_omniseed_ecosystem
@@ -221,7 +221,21 @@ spec:
       - { id: conformance_observer, name: Conformance Observer, offers: [conformance_observation] }
       - { id: os_observer, name: OS Observer, offers: [interface_health_observation] }
     memory:
-      - { id: ecosystem_memory, name: Ecosystem Organisational Memory, offers: [organisational_context, engineering_history] }
+      - id: ecosystem_memory
+        name: Ecosystem Organisational Memory
+        offers: [organisational_context, engineering_history]
+        spec:
+          implementation:
+            product: Omnicede embedded graph memory
+            protocol: omniseed.provider.protocol/1.0
+            repository: https://github.com/mikeajijola/omnicede.git
+            revision: ef357be679fed3cb120ae037ae062829de8cf970
+          persistence:
+            kind: sqlite
+            durability: required
+          expectedObservation:
+            type: omnicede_memory_state
+            evidenceType: omnicede_memory_observation
     identity:
       - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
       - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
