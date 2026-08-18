@@ -195,7 +195,7 @@ spec:
             company: https://omniseed-os.vercel.app/api/company
             health: https://omniseed-os.vercel.app/api/health
             operations: https://omniseed-os.vercel.app
-          optional: false
+          optional: true
           project: omniseed-os
           provider: vercel
           providerRevision: 63b352e9ff0821fa71b6790cde307a10f6f18668
