@@ -10,7 +10,19 @@ on:
         required: true
         default: plan
         type: choice
-        options: [plan, observe]
+        options: [plan, bootstrap, observe]
+      approved_plan_id:
+        description: Exact plan ID reviewed before a bootstrap apply
+        required: false
+        type: string
+      approved_plan_hash:
+        description: Exact plan hash reviewed before a bootstrap apply
+        required: false
+        type: string
+      approved_resources:
+        description: Comma-separated declared resource IDs approved from that plan
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -72,4 +84,9 @@ jobs:
           OMNISEED_PROVIDER_OPERATION_TOKEN: ${{ secrets.OMNISEED_OPERATION_TOKEN }}
           LILY_RUNTIME_OBSERVATION_TOKEN: ${{ secrets.LILY_RUNTIME_OBSERVATION_TOKEN }}
           RECONCILIATION_OPERATION: ${{ inputs.operation }}
+          OMNISEED_APPROVED_PLAN_ID: ${{ inputs.approved_plan_id }}
+          OMNISEED_APPROVED_PLAN_HASH: ${{ inputs.approved_plan_hash }}
+          OMNISEED_APPROVED_RESOURCES: ${{ inputs.approved_resources }}
+          OMNISEED_APPROVER_IDENTITY: operator_identities
+          OMNISEED_APPROVER_PRINCIPAL: ${{ github.actor }}
         run: node scripts/reconcile.mjs "$RECONCILIATION_OPERATION"

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { MemoryStateStore } from "@omniseed/engine";
+import { MemoryStateStore, ReferenceProvider } from "@omniseed/engine";
 import { loadOmniform } from "@omniseed/omniform";
 import { runReconciliation } from "../scripts/reconcile.mjs";
 
@@ -36,4 +36,44 @@ test("observation keeps desired and observed revisions separate", async () => {
   assert.equal(state.binding.desiredRevision, revision);
   assert.equal(state.binding.observedRevision, revision);
   assert.equal(state.history.at(-1).type, "reconciled");
+});
+
+test("bootstrap applies only exact reviewed declared resources and seeds durable Engine state", async () => {
+  const providers = [new ReferenceProvider({ id: "vercel", families: ["agents", "connectors"] })];
+  const preview = await runReconciliation({ desiredRevision: revision, environment: "test", store: new MemoryStateStore(), providerHandles: providers });
+  const durableStore = new MemoryStateStore();
+  const bootstrapped = await runReconciliation({
+    operation: "bootstrap",
+    desiredRevision: revision,
+    environment: "test",
+    store: new MemoryStateStore(),
+    durableStore,
+    providerHandles: providers,
+    expectedPlanId: preview.result.id,
+    expectedPlanHash: preview.result.hash,
+    approvedResourceIds: ["lily", "omniseed_os"],
+    approverPrincipal: "reviewer"
+  });
+  const state = await durableStore.load("omniseed_ecosystem");
+  assert.deepEqual(state.deployed.map(item => item.id), ["lily", "omniseed_os"]);
+  assert.deepEqual(bootstrapped.reviewedPlan.approvedResourceIds, ["lily", "omniseed_os"]);
+  assert.equal(bootstrapped.approval.actorId, "operator_identities:reviewer");
+  assert.deepEqual(state.history.map(item => item.type), ["company_binding_recorded", "plan_generated", "plan_approved", "plan_applied", "reconciled"]);
+  assert.equal(state.binding.desiredRevision, revision);
+  assert.equal(state.binding.observedRevision, revision);
+});
+
+test("bootstrap fails closed before Provider mutation for a stale plan or non-empty durable state", async () => {
+  const providers = [new ReferenceProvider({ id: "vercel", families: ["agents", "connectors"] })];
+  const preview = await runReconciliation({ desiredRevision: revision, environment: "test", store: new MemoryStateStore(), providerHandles: providers });
+  await assert.rejects(runReconciliation({
+    operation: "bootstrap", desiredRevision: revision, environment: "test", store: new MemoryStateStore(), durableStore: new MemoryStateStore(), providerHandles: providers,
+    expectedPlanId: preview.result.id, expectedPlanHash: "0".repeat(64), approvedResourceIds: ["lily"]
+  }), /does not match/);
+  const occupied = new MemoryStateStore();
+  await occupied.save({ ...(await occupied.load("omniseed_ecosystem")), history: [{ type: "existing" }] }, 0);
+  await assert.rejects(runReconciliation({
+    operation: "bootstrap", desiredRevision: revision, environment: "test", store: new MemoryStateStore(), durableStore: occupied, providerHandles: providers,
+    expectedPlanId: preview.result.id, expectedPlanHash: preview.result.hash, approvedResourceIds: ["lily"]
+  }), /only when the durable company runtime state is empty/);
 });

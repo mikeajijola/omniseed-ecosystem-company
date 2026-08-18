@@ -12,7 +12,27 @@ The family Provider map is a default. Individual primitive resources bind their 
 
 ## Repeatable reconciliation
 
-[`scripts/reconcile.mjs`](scripts/reconcile.mjs) assembles the Engine from this approved declaration, a durable state endpoint, and an explicit installed-Provider configuration. It invokes only the declared `bind_company`, `generate_plan`, and `observe_company` operations. It has no apply or approval shortcut. The same declaration, exact Git revision, durable state, and equivalent Provider configuration return the same still-valid plan.
+[`scripts/reconcile.mjs`](scripts/reconcile.mjs) assembles the Engine from this approved declaration, a durable state endpoint, and an explicit installed-Provider configuration. The same declaration, exact Git revision, durable state, and equivalent Provider configuration return the same still-valid plan.
+
+The initial production bootstrap is also declarative and governed. First run
+`plan`, review its exact ID, hash, and resource actions, then dispatch
+`bootstrap` with that ID, hash, and an explicit comma-separated list of approved
+resource IDs. The runner recomputes the plan, fails if either binding changed,
+resolves `plan.approve` from the declared operator identity, and invokes the
+ordinary `apply_plan` operation as the separately declared reconciler identity.
+It applies only the selected resource actions, seeds the newly available durable
+state service, and invokes ordinary observation so desired and observed
+revisions remain separate. Bootstrap refuses a non-empty durable company state;
+all later runs use that durable state directly.
+
+For the smallest production slice the reviewed resource list is `lily,omniseed_os`.
+Nothing in the script contains Vercel project IDs, source repositories, package
+versions, endpoints, or Agent facts: those all come from `omniform.yaml`.
+Deploying another company with the same declarations and equivalent normal
+per-environment credential/configuration references therefore produces the same
+plan and immutable resource intents. Provider-assigned deployment IDs, URLs,
+timestamps, and other ordinary external outputs are observed rather than
+predicted.
 
 Pull requests run validation and clean-state equivalence tests. A protected manual run of [the reconciliation workflow](.github/workflows/reconcile.yml) uses the `production` GitHub environment and requires:
 
@@ -20,6 +40,11 @@ Pull requests run validation and clean-state equivalence tests. A protected manu
 - `OMNISEED_STATE_TOKEN` as a secret;
 - checked-out, commit-pinned GitHub, Vercel, Neon, and OmniSeed Provider processes assembled by `scripts/provider-configuration.mjs`;
 - server-side Provider credentials in the protected production environment.
+
+The `production` environment is the human approval boundary for a bootstrap
+dispatch. The workflow actor is recorded as a principal of the declared
+`operator_identities` resource; the GitHub Actions reconciler has `plan.apply`
+but deliberately lacks `plan.approve`, so it cannot approve its own plan.
 
 Omnicede is included only when `OMNICEDE_DATABASE_PATH` names genuinely durable mounted storage. The workflow does not label an ephemeral Actions SQLite file as installed production memory.
 
