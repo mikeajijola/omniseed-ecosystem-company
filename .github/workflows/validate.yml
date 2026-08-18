@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - omniform.yaml
+      - package.json
+      - package-lock.json
       - .github/workflows/validate.yml
 
 permissions:
@@ -13,8 +15,10 @@ jobs:
   omniform:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
-      - run: npx --yes @omniseed/omniform@1.0.0-alpha.4 validate omniform.yaml
+          cache: npm
+      - run: npm ci
+      - run: npm run validate
