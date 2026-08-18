@@ -46,6 +46,7 @@ export function productionProviderConfiguration(env = process.env) {
       args: [resolve(root, "omniseed/provider/omniseed_provider.py")],
       configuration: {
         operationEndpoint: env.OMNISEED_OPERATION_ENDPOINT ?? "https://omniseed-os.vercel.app",
+        desiredRevision: env.OMNISEED_DESIRED_REVISION,
         credentialEnvironment: "OMNISEED_PROVIDER_OPERATION_TOKEN"
       }
     }
