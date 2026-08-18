@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   validate:
@@ -33,15 +34,42 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with: { repository: mikeajijola/omniseed-provider-github, ref: 73aa6a1d088a24230fba42dc894d723752b1736c, path: providers/github }
+      - uses: actions/checkout@v6
+        with: { repository: mikeajijola/omniseed-provider-vercel, ref: a01051b8ec3f957ac4106f4e75d7acbce2019566, path: providers/vercel }
+      - uses: actions/checkout@v6
+        with: { repository: mikeajijola/omniseed-provider-neon, ref: b8cc57f9411d0cd52732be267b75d4b1da1188f2, path: providers/neon }
+      - uses: actions/checkout@v6
+        with: { repository: mikeajijola/omniseed-provider-omniseed, ref: bfa20da6f2e69e183c491b146897c0afd16344fa, path: providers/omniseed }
       - uses: actions/setup-node@v6
         with: { node-version: "24", cache: npm }
       - run: npm ci
+      - name: Assemble installed Provider configuration
+        env:
+          OMNISEED_PROVIDER_ROOT: ${{ github.workspace }}/providers
+          OMNISEED_DESIRED_REVISION: ${{ github.sha }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          NEON_PROJECT_NAME: ${{ vars.NEON_PROJECT_NAME }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          NEON_ORGANISATION_ID: ${{ vars.NEON_ORGANISATION_ID }}
+          NEON_REGION_ID: ${{ vars.NEON_REGION_ID }}
+          NEON_POSTGRES_VERSION: ${{ vars.NEON_POSTGRES_VERSION }}
+        run: node scripts/provider-configuration.mjs provider-configuration.json
       - name: Invoke ordinary governed reconciliation
         env:
           OMNISEED_DESIRED_REVISION: ${{ github.sha }}
           OMNISEED_ENVIRONMENT: production
           OMNISEED_STATE_ENDPOINT: ${{ vars.OMNISEED_STATE_ENDPOINT }}
           OMNISEED_STATE_TOKEN: ${{ secrets.OMNISEED_STATE_TOKEN }}
-          OMNISEED_PROVIDER_CONFIGURATION: ${{ secrets.OMNISEED_PROVIDER_CONFIGURATION }}
+          OMNISEED_PROVIDER_CONFIGURATION_FILE: provider-configuration.json
+          GH_TOKEN: ${{ github.token }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OMNISEED_OPERATOR_TOKEN: ${{ secrets.OMNISEED_OPERATOR_TOKEN }}
+          OMNISEED_OPERATION_TOKEN: ${{ secrets.OMNISEED_OPERATION_TOKEN }}
+          OMNISEED_PROVIDER_OPERATION_TOKEN: ${{ secrets.OMNISEED_OPERATION_TOKEN }}
+          LILY_RUNTIME_OBSERVATION_TOKEN: ${{ secrets.LILY_RUNTIME_OBSERVATION_TOKEN }}
           RECONCILIATION_OPERATION: ${{ inputs.operation }}
         run: node scripts/reconcile.mjs "$RECONCILIATION_OPERATION"
