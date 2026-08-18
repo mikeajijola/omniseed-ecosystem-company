@@ -1,0 +1,16 @@
+{
+  "name": "omniseed-ecosystem-company",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "omniform validate omniform.yaml",
+    "test": "node --test",
+    "reconcile:dry-run": "node scripts/reconcile.mjs plan --dry-run"
+  },
+  "dependencies": {
+    "@omniseed/engine": "1.0.0-alpha.8",
+    "@omniseed/omniform": "1.0.0-alpha.5"
+  },
+  "engines": { "node": ">=22" }
+}

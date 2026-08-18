@@ -1,0 +1,47 @@
+name: Reconcile OmniSeed Ecosystem
+
+on:
+  pull_request:
+    paths: [omniform.yaml, package.json, package-lock.json, scripts/**, test/**, .github/workflows/reconcile.yml]
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Ordinary governed reconciliation operation
+        required: true
+        default: plan
+        type: choice
+        options: [plan, observe]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: "24", cache: npm }
+      - run: npm ci
+      - run: npm run validate
+      - run: npm test
+
+  reconcile:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: "24", cache: npm }
+      - run: npm ci
+      - name: Invoke ordinary governed reconciliation
+        env:
+          OMNISEED_DESIRED_REVISION: ${{ github.sha }}
+          OMNISEED_ENVIRONMENT: production
+          OMNISEED_STATE_ENDPOINT: ${{ vars.OMNISEED_STATE_ENDPOINT }}
+          OMNISEED_STATE_TOKEN: ${{ secrets.OMNISEED_STATE_TOKEN }}
+          OMNISEED_PROVIDER_CONFIGURATION: ${{ secrets.OMNISEED_PROVIDER_CONFIGURATION }}
+          RECONCILIATION_OPERATION: ${{ inputs.operation }}
+        run: node scripts/reconcile.mjs "$RECONCILIATION_OPERATION"

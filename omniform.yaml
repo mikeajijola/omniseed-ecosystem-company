@@ -20,11 +20,11 @@ spec:
       description: OmniSeed can explain with evidence how its own ecosystem company is run.
   providers:
     agents: { provider: vercel }
-    skills: { provider: ecosystem_tooling }
+    skills: { provider: omniseed_ecosystem }
     connectors: { provider: vercel }
     workflows: { provider: github }
-    policies: { provider: ecosystem_governance }
-    observations: { provider: ecosystem_observer }
+    policies: { provider: omniseed_ecosystem }
+    observations: { provider: omniseed_ecosystem }
     memory: { provider: omnicede }
     identity: { provider: github }
   capabilities:
@@ -72,6 +72,19 @@ spec:
         - { id: interface_authority, primitiveFamily: policies }
         - { id: interface_health_observation, primitiveFamily: observations }
       realisations: [omniseed_os_interface]
+    - id: reconcile_omniseed_ecosystem
+      name: Reconcile OmniSeed Ecosystem
+      description: Converge approved Git-backed desired company state through governed planning, Provider execution, observation, drift detection, and durable evidence.
+      autonomy: { mode: plan }
+      requires:
+        - { id: approved_desired_state_resolution, primitiveFamily: workflows }
+        - { id: deterministic_reconciliation, primitiveFamily: workflows }
+        - { id: provider_operation_boundary, primitiveFamily: connectors }
+        - { id: reconciliation_authority, primitiveFamily: policies }
+        - { id: runtime_state_continuity, primitiveFamily: memory }
+        - { id: reconciliation_observation, primitiveFamily: observations }
+        - { id: reconciler_identity, primitiveFamily: identity }
+      realisations: [ecosystem_reconciliation]
   realisations:
     - id: lily_stewardship
       name: Lily reference stewardship
@@ -114,10 +127,21 @@ spec:
         - { resource: operator_identities, supplies: [operator_identity] }
         - { resource: interface_policy, supplies: [interface_authority] }
         - { resource: os_observer, supplies: [interface_health_observation] }
+    - id: ecosystem_reconciliation
+      name: Git-governed OmniSeed reconciliation
+      capability: reconcile_omniseed_ecosystem
+      participants:
+        - { resource: ecosystem_reconciliation_workflow, supplies: [approved_desired_state_resolution, deterministic_reconciliation] }
+        - { resource: omniseed_operations, supplies: [provider_operation_boundary] }
+        - { resource: reconciliation_policy, supplies: [reconciliation_authority] }
+        - { resource: engine_runtime_state, supplies: [runtime_state_continuity] }
+        - { resource: reconciliation_observer, supplies: [reconciliation_observation] }
+        - { resource: reconciler_identity, supplies: [reconciler_identity] }
   resources:
     agents:
       - id: lily
         name: Lily
+        provider: vercel
         offers: [stewardship_agency]
         risk: high
         spec:
@@ -125,6 +149,8 @@ spec:
             - company.read
             - capability.read
             - company_change.propose
+            - plan.create
+            - state.reconcile
           bootstrap:
             company: omniseed_ecosystem
             credentialReference: OMNISEED_OPERATION_TOKEN
@@ -163,8 +189,10 @@ spec:
     connectors:
       - id: omniseed_operations
         name: Governed OmniSeed Operations
+        provider: vercel
         offers:
           - governed_operations_access
+          - provider_operation_boundary
         spec:
           authentication:
             credentialReference: OMNISEED_OPERATION_TOKEN
@@ -172,15 +200,15 @@ spec:
           endpoint: https://omniseed-os.vercel.app
           provider: vercel
           providerRevision: 63b352e9ff0821fa71b6790cde307a10f6f18668
-      - { id: github_repositories, name: Public Repository Boundary, offers: [repository_access, public_repository_access] }
+      - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access] }
       - id: omniseed_os
         name: OmniSeed OS
+        provider: vercel
         offers:
           - human_operating_interface
         spec:
           companyBinding:
             companyId: omniseed_ecosystem
-            desiredRevision: 492413caa4c7cc076920d30e5b3d4e88209cae39
             path: omniform.yaml
             readOnlyInspection: true
             repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
@@ -199,6 +227,9 @@ spec:
             health: https://omniseed-os.vercel.app/api/health
             operations: https://omniseed-os.vercel.app
           optional: true
+          implementation:
+            package: "@omniseed/os"
+            version: 1.0.0-alpha.8
           project: omniseed-os
           provider: vercel
           providerRevision: a2fbf6488683a4435d81544ec879b764b00c8c11
@@ -208,24 +239,56 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 3ce0831729872c9d4a3703adbb1a5aceae45eea4
+            revision: f9c7882f8d3e33d94270a21fc3ef1071a7c07c3b
     workflows:
-      - { id: company_change_workflow, name: Company Change Workflow, offers: [governed_change_process] }
-      - { id: github_change_workflow, name: GitHub Change Workflow, offers: [software_change_manage] }
-      - { id: github_conformance_workflow, name: GitHub Conformance Workflow, offers: [conformance_workflow] }
+      - { id: company_change_workflow, name: Company Change Workflow, provider: github, offers: [governed_change_process] }
+      - { id: github_change_workflow, name: GitHub Change Workflow, provider: github, offers: [software_change_manage] }
+      - { id: github_conformance_workflow, name: GitHub Conformance Workflow, provider: github, offers: [conformance_workflow] }
+      - id: ecosystem_reconciliation_workflow
+        name: Ecosystem Reconciliation Workflow
+        provider: github
+        offers: [approved_desired_state_resolution, deterministic_reconciliation]
+        risk: high
+        spec:
+          implementation:
+            enginePackage: "@omniseed/engine"
+            engineVersion: 1.0.0-alpha.8
+            lifecycle: [load, compile, plan, approve, apply, observe, persist, compile]
+            product: GitHub Actions
+            sourceRevision: 983f6fa5d62cd7cc4f923f1da8610d9f2c3941ed
+          source:
+            repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
+            branch: main
+            path: omniform.yaml
+          triggers: [governed_dispatch]
     policies:
       - { id: lily_authority, name: Lily Authority, offers: [stewardship_authority], spec: { allow: [read, propose], deny: [approve, self_escalate] } }
       - { id: review_policy, name: Required Review, offers: [required_review], spec: { pullRequestRequired: true } }
       - { id: invariant_catalogue, name: Ecosystem Invariants, offers: [invariant_policy] }
       - { id: interface_policy, name: Interface Authority Policy, offers: [interface_authority] }
+      - id: reconciliation_policy
+        name: Reconciliation Authority Policy
+        provider: omniseed_ecosystem
+        offers: [reconciliation_authority]
+        spec:
+          requireExactPlanApproval: true
+          forbidSelfApproval: true
+          observeAfterApply: true
     observations:
       - { id: company_observer, name: Company State Observer, offers: [company_state_observation] }
       - { id: change_observer, name: Change Observer, offers: [change_observation] }
       - { id: conformance_observer, name: Conformance Observer, offers: [conformance_observation] }
       - { id: os_observer, name: OS Observer, offers: [interface_health_observation] }
+      - id: reconciliation_observer
+        name: Reconciliation Observer
+        provider: omniseed_ecosystem
+        offers: [reconciliation_observation]
+        spec:
+          measures: [desired_revision, observed_revision, provider_state, drift, evidence]
     memory:
       - id: ecosystem_memory
         name: Ecosystem Organisational Memory
+        provider: omnicede
         offers: [organisational_context, engineering_history]
         spec:
           implementation:
@@ -239,10 +302,22 @@ spec:
           expectedObservation:
             type: omnicede_memory_state
             evidenceType: omnicede_memory_observation
+      - id: engine_runtime_state
+        name: Durable OmniSeed Runtime State
+        provider: neon
+        offers: [runtime_state_continuity]
+        risk: high
+        spec:
+          canonicalDesiredState: false
+          consistency: optimistic_concurrency
+          credentialReferences: [DATABASE_URL, OMNISEED_STATE_TOKEN]
+          product: PostgreSQL
+          requiredRecords: [company_binding, desired_revision, observed_revision, plans, approvals, provider_actions, observations, evidence, activity, reconciliation_history]
     identity:
       - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
       - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
       - { id: operator_identities, name: Operator Identities, offers: [operator_identity] }
+      - { id: reconciler_identity, name: Reconciler Service Identity, provider: github, offers: [reconciler_identity], spec: { product: GitHub Actions OIDC, authority: [company.bind, plan.create, plan.apply, state.reconcile], selfApproval: false } }
   operations:
     - { id: inspect_company, capability: steward_omniseed_ecosystem, description: Inspect desired and observed company state, input: {}, output: {}, mutation: false, permissions: [company.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
     - { id: get_capability, capability: steward_omniseed_ecosystem, description: Inspect a capability trace, input: {}, output: {}, mutation: false, permissions: [capability.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
@@ -250,3 +325,7 @@ spec:
     - { id: inspect_company_change, capability: steward_omniseed_ecosystem, description: Inspect company change proposals, input: {}, output: {}, mutation: false, permissions: [company_change.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
     - { id: approve_company_change, capability: steward_omniseed_ecosystem, description: Approve an exact company change, input: {}, output: {}, mutation: true, permissions: [company_change.approve], approval: required, interfaces: [ui, api, cli, agent] }
     - { id: apply_company_change, capability: steward_omniseed_ecosystem, description: Submit an approved company change as a pull request, input: {}, output: {}, mutation: true, permissions: [company_change.apply], approval: required, interfaces: [ui, api, cli, agent] }
+    - { id: generate_plan, capability: reconcile_omniseed_ecosystem, description: Generate and persist a deterministic reconciliation plan from approved desired state and current observed state, input: {}, output: {}, mutation: false, permissions: [plan.create], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
+    - { id: apply_plan, capability: reconcile_omniseed_ecosystem, description: Apply only actions from an exact persisted and approved reconciliation plan, input: {}, output: {}, mutation: true, permissions: [plan.apply], approval: required, interfaces: [ui, api, cli, agent, machine] }
+    - { id: observe_company, capability: reconcile_omniseed_ecosystem, description: Observe deployed primitive resources through their selected Providers and persist evidence without changing desired state, input: {}, output: {}, mutation: true, permissions: [state.reconcile], approval: policy, interfaces: [lily, ui, api, cli, agent, machine] }
+    - { id: bind_company, capability: reconcile_omniseed_ecosystem, description: Bind this runtime to an exact approved merged desired revision without copying the company definition into runtime state, input: {}, output: {}, mutation: true, permissions: [company.bind], approval: policy, interfaces: [api, cli, machine] }
