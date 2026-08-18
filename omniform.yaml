@@ -20,11 +20,11 @@ spec:
       description: OmniSeed can explain with evidence how its own ecosystem company is run.
   providers:
     agents: { provider: vercel }
-    skills: { provider: omniseed_ecosystem }
+    skills: { provider: omniseed }
     connectors: { provider: vercel }
     workflows: { provider: github }
-    policies: { provider: omniseed_ecosystem }
-    observations: { provider: omniseed_ecosystem }
+    policies: { provider: omniseed }
+    observations: { provider: omniseed }
     memory: { provider: omnicede }
     identity: { provider: github }
   capabilities:
@@ -172,7 +172,7 @@ spec:
               operation: https://omniseed-lily.vercel.app/agents/lily
             project: omniseed-lily
             provider: vercel
-            providerRevision: 63b352e9ff0821fa71b6790cde307a10f6f18668
+            providerRevision: 6a65f743db11b72fb95c612766b69813ea33c0da
             observationCredentialReference: LILY_RUNTIME_OBSERVATION_TOKEN
             secretReferences:
               - OMNISEED_OPERATION_TOKEN
@@ -183,9 +183,9 @@ spec:
               - ai_gateway
       - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency], spec: { kind: people_and_agents } }
     skills:
-      - { id: stewardship_skills, name: Stewardship Skills, offers: [company_reasoning], spec: { abilities: [inspect, reason, explain, propose, delegate, escalate] } }
-      - { id: engineering_skills, name: Software Engineering Skills, offers: [software_engineering] }
-      - { id: conformance_runner, name: Ecosystem Conformance Runner, offers: [conformance_skill] }
+      - { id: stewardship_skills, name: Stewardship Skills, provider: omniseed, offers: [company_reasoning], spec: { abilities: [inspect, reason, explain, propose, delegate, escalate] } }
+      - { id: engineering_skills, name: Software Engineering Skills, provider: omniseed, offers: [software_engineering] }
+      - { id: conformance_runner, name: Ecosystem Conformance Runner, provider: omniseed, offers: [conformance_skill] }
     connectors:
       - id: omniseed_operations
         name: Governed OmniSeed Operations
@@ -199,7 +199,7 @@ spec:
           companyBinding: omniseed_ecosystem
           endpoint: https://omniseed-os.vercel.app
           provider: vercel
-          providerRevision: 63b352e9ff0821fa71b6790cde307a10f6f18668
+          providerRevision: 6a65f743db11b72fb95c612766b69813ea33c0da
       - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access] }
       - id: omniseed_os
         name: OmniSeed OS
@@ -210,13 +210,15 @@ spec:
           companyBinding:
             companyId: omniseed_ecosystem
             path: omniform.yaml
-            readOnlyInspection: true
+            readOnlyInspection: false
             repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
             stewardActorId: lily
           durableState:
             credentialReferences:
               - DATABASE_URL
               - OMNISEED_STATE_TOKEN
+              - OMNISEED_OPERATOR_TOKEN
+              - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-os.vercel.app/api/state/companies/omniseed_ecosystem/state
             implementationRevision: 474b63c9f6dcd9050300e82574c237241605b67d
             provider: neon
@@ -232,7 +234,7 @@ spec:
             version: 1.0.0-alpha.8
           project: omniseed-os
           provider: vercel
-          providerRevision: a2fbf6488683a4435d81544ec879b764b00c8c11
+          providerRevision: 6a65f743db11b72fb95c612766b69813ea33c0da
           services:
             - functions
             - deployment
@@ -262,26 +264,26 @@ spec:
             path: omniform.yaml
           triggers: [governed_dispatch]
     policies:
-      - { id: lily_authority, name: Lily Authority, offers: [stewardship_authority], spec: { allow: [read, propose], deny: [approve, self_escalate] } }
-      - { id: review_policy, name: Required Review, offers: [required_review], spec: { pullRequestRequired: true } }
-      - { id: invariant_catalogue, name: Ecosystem Invariants, offers: [invariant_policy] }
-      - { id: interface_policy, name: Interface Authority Policy, offers: [interface_authority] }
+      - { id: lily_authority, name: Lily Authority, provider: omniseed, offers: [stewardship_authority], spec: { allow: [read, propose], deny: [approve, self_escalate] } }
+      - { id: review_policy, name: Required Review, provider: omniseed, offers: [required_review], spec: { pullRequestRequired: true } }
+      - { id: invariant_catalogue, name: Ecosystem Invariants, provider: omniseed, offers: [invariant_policy] }
+      - { id: interface_policy, name: Interface Authority Policy, provider: omniseed, offers: [interface_authority] }
       - id: reconciliation_policy
         name: Reconciliation Authority Policy
-        provider: omniseed_ecosystem
+        provider: omniseed
         offers: [reconciliation_authority]
         spec:
           requireExactPlanApproval: true
           forbidSelfApproval: true
           observeAfterApply: true
     observations:
-      - { id: company_observer, name: Company State Observer, offers: [company_state_observation] }
-      - { id: change_observer, name: Change Observer, offers: [change_observation] }
-      - { id: conformance_observer, name: Conformance Observer, offers: [conformance_observation] }
-      - { id: os_observer, name: OS Observer, offers: [interface_health_observation] }
+      - { id: company_observer, name: Company State Observer, provider: omniseed, offers: [company_state_observation] }
+      - { id: change_observer, name: Change Observer, provider: omniseed, offers: [change_observation] }
+      - { id: conformance_observer, name: Conformance Observer, provider: omniseed, offers: [conformance_observation] }
+      - { id: os_observer, name: OS Observer, provider: omniseed, offers: [interface_health_observation] }
       - id: reconciliation_observer
         name: Reconciliation Observer
-        provider: omniseed_ecosystem
+        provider: omniseed
         offers: [reconciliation_observation]
         spec:
           measures: [desired_revision, observed_revision, provider_state, drift, evidence]
@@ -295,7 +297,7 @@ spec:
             product: Omnicede embedded graph memory
             protocol: omniseed.provider.protocol/1.0
             repository: https://github.com/mikeajijola/omnicede.git
-            revision: ef357be679fed3cb120ae037ae062829de8cf970
+            revision: 20681f2c942c8a6d3bd23b693105992a08e69c3e
           persistence:
             kind: sqlite
             durability: required
@@ -309,6 +311,10 @@ spec:
         risk: high
         spec:
           canonicalDesiredState: false
+          projectName: omniseed-ecosystem-runtime
+          implementation:
+            repository: https://github.com/mikeajijola/omniseed-provider-neon.git
+            revision: b8cc57f9411d0cd52732be267b75d4b1da1188f2
           consistency: optimistic_concurrency
           credentialReferences: [DATABASE_URL, OMNISEED_STATE_TOKEN]
           product: PostgreSQL
