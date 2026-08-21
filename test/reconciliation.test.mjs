@@ -35,6 +35,10 @@ test("Lily and OmniSeed OS share one immutable Vercel runtime without collapsing
   assert.equal(lily.provider, "vercel");
   assert.equal(os.spec.provider, "vercel");
   assert.equal(lily.spec.runtime.providerRevision, os.spec.providerRevision);
+  assert.equal(os.spec.access.stewardChat, "public");
+  const interfacePolicy = declaration.spec.resources.policies.find(item => item.id === "interface_policy");
+  assert.equal(interfacePolicy.spec.stewardChat, "public");
+  assert.equal(interfacePolicy.spec.mutationsRequireGovernedOperations, true);
 });
 
 test("repeat planning against one durable state returns the exact same plan and Activity", async () => {
