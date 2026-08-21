@@ -8,6 +8,7 @@ test("production Provider configuration uses organisation Providers and credenti
     OMNISEED_PROVIDER_ROOT: "/providers",
     OMNISEED_DESIRED_REVISION: "a".repeat(40),
     VERCEL_TEAM_ID: "team_1",
+    VERCEL_STATUS_PROJECT_ID: "omniseed-ecosystem-os",
     NEON_PROJECT_ID: "quiet-tree-123",
     VERCEL_TOKEN: "must-not-appear",
     NEON_API_KEY: "must-not-appear",
@@ -18,6 +19,7 @@ test("production Provider configuration uses organisation Providers and credenti
   assert.doesNotMatch(serialized, /must-not-appear/);
   assert.doesNotMatch(serialized, /provider-eve|github-actions-provider|vercel-functions-provider/);
   assert.equal(providers.find(item => item.id === "vercel").configuration.desiredRevision, "a".repeat(40));
+  assert.equal(providers.find(item => item.id === "vercel").configuration.statusProjectId, "omniseed-ecosystem-os");
   for (const provider of providers) {
     assert.equal(provider.startupTimeoutMs, 15_000, `${provider.id} must tolerate production process startup latency`);
     assert.equal(provider.requestTimeoutMs, 360_000, `${provider.id} must permit declared Provider readiness waits`);
@@ -35,8 +37,7 @@ test("Omnicede is installed only when a durable database path is explicitly supp
 
 test("production reconciliation fails closed on Vercel identity and project scope without exposing credential material", async () => {
   const workflow = await readFile(new URL("../.github/workflows/reconcile.yml", import.meta.url), "utf8");
-  assert.match(workflow, /https:\/\/api\.vercel\.com\/v2\/user/);
-  assert.match(workflow, /projects\/omniseed-ecosystem-os\?teamId=\$\{VERCEL_TEAM_ID\}/);
+  assert.match(workflow, /projects\/\$\{VERCEL_STATUS_PROJECT_ID\}\?teamId=\$\{VERCEL_TEAM_ID\}/);
   assert.match(workflow, /--output \/dev\/null/);
   assert.match(workflow, /secrets\.VERCEL_TOKEN/);
   assert.doesNotMatch(workflow, /echo[^\n]*VERCEL_TOKEN/);

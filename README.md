@@ -46,6 +46,7 @@ Pull requests run validation and clean-state equivalence tests. A protected manu
 
 - `OMNISEED_STATE_ENDPOINT` as an environment variable;
 - `OMNISEED_STATE_TOKEN` as a secret;
+- `VERCEL_TEAM_ID` and `VERCEL_STATUS_PROJECT_ID` as ordinary Provider connection settings;
 - checked-out, commit-pinned GitHub, Vercel, Neon, and OmniSeed Provider processes assembled by `scripts/provider-configuration.mjs`;
 - server-side Provider credentials in the protected production environment.
 

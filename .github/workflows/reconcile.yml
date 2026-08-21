@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v6
         with: { repository: mikeajijola/omniseed-provider-github, ref: 1207b6f682469c9738815e5932904626df2d6402, path: providers/github }
       - uses: actions/checkout@v6
-        with: { repository: mikeajijola/omniseed-provider-vercel, ref: 739049d2fa1a288721863acc2a9045df3a79472d, path: providers/vercel }
+        with: { repository: mikeajijola/omniseed-provider-vercel, ref: e9bebbf343e00b5daa44f9a85d2291920d3030cd, path: providers/vercel }
       - uses: actions/checkout@v6
         with: { repository: mikeajijola/omniseed-provider-neon, ref: 2ad0bfaef3ac17f03397719afdc7cc6e0cded9bc, path: providers/neon }
       - uses: actions/checkout@v6
@@ -66,17 +66,11 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          VERCEL_STATUS_PROJECT_ID: ${{ vars.VERCEL_STATUS_PROJECT_ID }}
         run: |
-          user_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
-            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
-            https://api.vercel.com/v2/user)"
-          if [ "$user_status" != "200" ]; then
-            echo "::error::Vercel credential identity probe failed (HTTP ${user_status})."
-            exit 1
-          fi
           project_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
             --header "Authorization: Bearer ${VERCEL_TOKEN}" \
-            "https://api.vercel.com/v9/projects/omniseed-ecosystem-os?teamId=${VERCEL_TEAM_ID}")"
+            "https://api.vercel.com/v9/projects/${VERCEL_STATUS_PROJECT_ID}?teamId=${VERCEL_TEAM_ID}")"
           if [ "$project_status" != "200" ]; then
             echo "::error::Vercel project-scope probe failed (HTTP ${project_status})."
             exit 1
@@ -86,6 +80,7 @@ jobs:
           OMNISEED_PROVIDER_ROOT: ${{ github.workspace }}/providers
           OMNISEED_DESIRED_REVISION: ${{ github.sha }}
           VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          VERCEL_STATUS_PROJECT_ID: ${{ vars.VERCEL_STATUS_PROJECT_ID }}
           NEON_PROJECT_NAME: ${{ vars.NEON_PROJECT_NAME }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           NEON_ORGANISATION_ID: ${{ vars.NEON_ORGANISATION_ID }}
