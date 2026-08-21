@@ -34,6 +34,10 @@ state service has been seeded, ordinary plans fail closed against that durable
 state and the preview input must not be used.
 
 For the smallest production slice the reviewed resource list is `lily,omniseed_os`.
+They remain distinct Agent and interface resources but intentionally share the
+single `omniseed-ecosystem-os` Vercel project and immutable runtime artifact.
+The Lily resource retains its own implementation revision beneath that shared
+hosting source.
 Nothing in the script contains Vercel project IDs, source repositories, package
 versions, endpoints, or Agent facts: those all come from `omniform.yaml`.
 Deploying another company with the same declarations and equivalent normal

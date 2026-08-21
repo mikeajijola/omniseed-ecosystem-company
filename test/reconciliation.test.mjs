@@ -20,6 +20,23 @@ test("the same approved company and normal configuration yield an identical reco
   assert.ok(first.providerBindings.some(item => item.resourceId === "ecosystem_memory" && item.providerId === "omnicede"));
 });
 
+test("Lily and OmniSeed OS share one immutable Vercel runtime without collapsing their identities", async () => {
+  const declaration = await loadOmniform(new URL("../omniform.yaml", import.meta.url));
+  const lily = declaration.spec.resources.agents.find(item => item.id === "lily");
+  const os = declaration.spec.resources.connectors.find(item => item.id === "omniseed_os");
+
+  assert.equal(lily.spec.runtime.project, "omniseed-ecosystem-os");
+  assert.equal(os.spec.project, lily.spec.runtime.project);
+  assert.deepEqual(lily.spec.runtime.source, os.spec.source);
+  assert.match(lily.spec.runtime.source.revision, /^[0-9a-f]{40}$/);
+  assert.equal(lily.spec.implementation.repository, "https://github.com/mikeajijola/omniseed-lily.git");
+  assert.notEqual(lily.spec.implementation.repository, lily.spec.runtime.source.repository);
+  assert.equal(lily.spec.implementation.framework, "eve");
+  assert.equal(lily.provider, "vercel");
+  assert.equal(os.spec.provider, "vercel");
+  assert.equal(lily.spec.runtime.providerRevision, os.spec.providerRevision);
+});
+
 test("repeat planning against one durable state returns the exact same plan and Activity", async () => {
   const store = new MemoryStateStore();
   const first = await runReconciliation({ desiredRevision: revision, environment: "test", store, protocolProviders: [] });
