@@ -41,6 +41,12 @@ Pull requests run validation and clean-state equivalence tests. A protected manu
 - checked-out, commit-pinned GitHub, Vercel, Neon, and OmniSeed Provider processes assembled by `scripts/provider-configuration.mjs`;
 - server-side Provider credentials in the protected production environment.
 
+Production Provider processes receive a bounded 15-second startup allowance and
+a six-minute request allowance. The latter covers the declared Vercel
+deployment-readiness wait while remaining bounded; the local Engine protocol's
+two-second test default is intentionally not used as a production deployment
+contract.
+
 The `production` environment is the human approval boundary for a bootstrap
 dispatch. The workflow actor is recorded as a principal of the declared
 `operator_identities` resource; the GitHub Actions reconciler has `plan.apply`

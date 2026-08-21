@@ -17,10 +17,17 @@ test("production Provider configuration uses organisation Providers and credenti
   assert.doesNotMatch(serialized, /must-not-appear/);
   assert.doesNotMatch(serialized, /provider-eve|github-actions-provider|vercel-functions-provider/);
   assert.equal(providers.find(item => item.id === "vercel").configuration.desiredRevision, "a".repeat(40));
+  for (const provider of providers) {
+    assert.equal(provider.startupTimeoutMs, 15_000, `${provider.id} must tolerate production process startup latency`);
+    assert.equal(provider.requestTimeoutMs, 360_000, `${provider.id} must permit declared Provider readiness waits`);
+  }
 });
 
 test("Omnicede is installed only when a durable database path is explicitly supplied", () => {
   assert.equal(productionProviderConfiguration({ OMNISEED_PROVIDER_ROOT: "/providers", OMNISEED_DESIRED_REVISION: "a".repeat(40) }).some(item => item.id === "omnicede"), false);
   const configured = productionProviderConfiguration({ OMNISEED_PROVIDER_ROOT: "/providers", OMNISEED_DESIRED_REVISION: "a".repeat(40), OMNICEDE_DATABASE_PATH: "/durable/omniseed.db" });
-  assert.equal(configured.find(item => item.id === "omnicede").configuration.databasePath, "/durable/omniseed.db");
+  const omnicede = configured.find(item => item.id === "omnicede");
+  assert.equal(omnicede.configuration.databasePath, "/durable/omniseed.db");
+  assert.equal(omnicede.startupTimeoutMs, 15_000);
+  assert.equal(omnicede.requestTimeoutMs, 360_000);
 });

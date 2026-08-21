@@ -3,6 +3,8 @@ import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
+const productionTransport = Object.freeze({ startupTimeoutMs: 15_000, requestTimeoutMs: 360_000 });
+
 export function productionProviderConfiguration(env = process.env) {
   const root = resolve(env.OMNISEED_PROVIDER_ROOT ?? "../providers");
   const providers = [
@@ -10,6 +12,7 @@ export function productionProviderConfiguration(env = process.env) {
       id: "github",
       command: "python3",
       args: [resolve(root, "github/provider/github_provider.py")],
+      ...productionTransport,
       configuration: {
         repository: "mikeajijola/omniseed-ecosystem-company",
         baseBranch: "main",
@@ -21,6 +24,7 @@ export function productionProviderConfiguration(env = process.env) {
       id: "vercel",
       command: "python3",
       args: [resolve(root, "vercel/provider/vercel_provider.py")],
+      ...productionTransport,
       configuration: compact({
         teamId: env.VERCEL_TEAM_ID,
         desiredRevision: env.OMNISEED_DESIRED_REVISION,
@@ -31,6 +35,7 @@ export function productionProviderConfiguration(env = process.env) {
       id: "neon",
       command: "python3",
       args: [resolve(root, "neon/provider/neon_provider.py")],
+      ...productionTransport,
       configuration: compact({
         projectName: env.NEON_PROJECT_NAME ?? "omniseed-ecosystem-runtime",
         projectId: env.NEON_PROJECT_ID,
@@ -44,6 +49,7 @@ export function productionProviderConfiguration(env = process.env) {
       id: "omniseed",
       command: "python3",
       args: [resolve(root, "omniseed/provider/omniseed_provider.py")],
+      ...productionTransport,
       configuration: {
         operationEndpoint: env.OMNISEED_OPERATION_ENDPOINT ?? "https://omniseed-ecosystem-os.vercel.app",
         desiredRevision: env.OMNISEED_DESIRED_REVISION,
@@ -55,6 +61,7 @@ export function productionProviderConfiguration(env = process.env) {
     id: "omnicede",
     command: resolve(root, "omnicede/target/release/omniseed_provider"),
     args: [],
+    ...productionTransport,
     configuration: { databasePath: env.OMNICEDE_DATABASE_PATH }
   });
   return providers;
