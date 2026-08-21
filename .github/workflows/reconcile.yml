@@ -23,6 +23,11 @@ on:
         description: Comma-separated declared resource IDs approved from that plan
         required: false
         type: string
+      bootstrap_preview:
+        description: Generate the first reviewed plan from empty runtime state before the declared state service exists
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -84,6 +89,7 @@ jobs:
           OMNISEED_PROVIDER_OPERATION_TOKEN: ${{ secrets.OMNISEED_OPERATION_TOKEN }}
           LILY_RUNTIME_OBSERVATION_TOKEN: ${{ secrets.LILY_RUNTIME_OBSERVATION_TOKEN }}
           RECONCILIATION_OPERATION: ${{ inputs.operation }}
+          OMNISEED_BOOTSTRAP_PREVIEW: ${{ inputs.bootstrap_preview }}
           OMNISEED_APPROVED_PLAN_ID: ${{ inputs.approved_plan_id }}
           OMNISEED_APPROVED_PLAN_HASH: ${{ inputs.approved_plan_hash }}
           OMNISEED_APPROVED_RESOURCES: ${{ inputs.approved_resources }}

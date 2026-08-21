@@ -63,6 +63,29 @@ test("bootstrap applies only exact reviewed declared resources and seeds durable
   assert.equal(state.binding.observedRevision, revision);
 });
 
+test("initial bootstrap preview uses the same empty state as bootstrap without contacting the not-yet-deployed state service", async () => {
+  const preview = await runReconciliation({
+    desiredRevision: revision,
+    environment: "test",
+    bootstrapPreview: true,
+    protocolProviders: []
+  });
+  const ordinaryEmptyPreview = await runReconciliation({
+    desiredRevision: revision,
+    environment: "test",
+    store: new MemoryStateStore(),
+    protocolProviders: []
+  });
+  assert.equal(preview.result.id, ordinaryEmptyPreview.result.id);
+  assert.equal(preview.result.hash, ordinaryEmptyPreview.result.hash);
+  await assert.rejects(runReconciliation({
+    operation: "observe",
+    desiredRevision: revision,
+    bootstrapPreview: true,
+    protocolProviders: []
+  }), /valid only for the plan operation/);
+});
+
 test("bootstrap fails closed before Provider mutation for a stale plan or non-empty durable state", async () => {
   const providers = [new ReferenceProvider({ id: "vercel", families: ["agents", "connectors"] })];
   const preview = await runReconciliation({ desiredRevision: revision, environment: "test", store: new MemoryStateStore(), providerHandles: providers });

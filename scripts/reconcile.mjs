@@ -16,6 +16,7 @@ export async function runReconciliation({
   providerHandles,
   protocolProviders,
   dryRun = false,
+  bootstrapPreview = process.env.OMNISEED_BOOTSTRAP_PREVIEW === "true",
   expectedPlanId = process.env.OMNISEED_APPROVED_PLAN_ID,
   expectedPlanHash = process.env.OMNISEED_APPROVED_PLAN_HASH,
   approvedResourceIds = csv(process.env.OMNISEED_APPROVED_RESOURCES),
@@ -24,8 +25,9 @@ export async function runReconciliation({
 } = {}) {
   if (!/^[0-9a-f]{40}$/i.test(desiredRevision)) throw new Error("Reconciliation requires the exact approved 40-character Git revision.");
   if (!["plan", "bootstrap", "observe"].includes(operation)) throw new Error("Reconciliation operation must be plan, bootstrap, or observe.");
+  if (bootstrapPreview && operation !== "plan") throw new Error("An initial bootstrap preview is valid only for the plan operation.");
   const declaration = await loadOmniform(declarationPath);
-  const configuredStore = store ?? (dryRun || operation === "bootstrap"
+  const configuredStore = store ?? (dryRun || operation === "bootstrap" || bootstrapPreview
     ? new MemoryStateStore()
     : new HttpStateStore({ endpoint: required("OMNISEED_STATE_ENDPOINT"), token: required("OMNISEED_STATE_TOKEN") }));
   const configuredProviders = protocolProviders ?? await providerConfiguration();
