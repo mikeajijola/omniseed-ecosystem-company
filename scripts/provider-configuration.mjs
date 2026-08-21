@@ -27,6 +27,7 @@ export function productionProviderConfiguration(env = process.env) {
       ...productionTransport,
       configuration: compact({
         teamId: env.VERCEL_TEAM_ID,
+        statusProjectId: env.VERCEL_STATUS_PROJECT_ID,
         desiredRevision: env.OMNISEED_DESIRED_REVISION,
         runtimeAuthTokenEnv: "LILY_RUNTIME_OBSERVATION_TOKEN"
       })
