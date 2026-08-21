@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { productionProviderConfiguration } from "../scripts/provider-configuration.mjs";
 
 test("production Provider configuration uses organisation Providers and credential references only", () => {
@@ -30,4 +31,13 @@ test("Omnicede is installed only when a durable database path is explicitly supp
   assert.equal(omnicede.configuration.databasePath, "/durable/omniseed.db");
   assert.equal(omnicede.startupTimeoutMs, 15_000);
   assert.equal(omnicede.requestTimeoutMs, 360_000);
+});
+
+test("production reconciliation fails closed on Vercel identity and project scope without exposing credential material", async () => {
+  const workflow = await readFile(new URL("../.github/workflows/reconcile.yml", import.meta.url), "utf8");
+  assert.match(workflow, /https:\/\/api\.vercel\.com\/v2\/user/);
+  assert.match(workflow, /projects\/omniseed-ecosystem-os\?teamId=\$\{VERCEL_TEAM_ID\}/);
+  assert.match(workflow, /--output \/dev\/null/);
+  assert.match(workflow, /secrets\.VERCEL_TOKEN/);
+  assert.doesNotMatch(workflow, /echo[^\n]*VERCEL_TOKEN/);
 });
