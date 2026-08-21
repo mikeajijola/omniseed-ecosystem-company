@@ -10,13 +10,13 @@ on:
         required: true
         default: plan
         type: choice
-        options: [plan, bootstrap, observe]
+        options: [plan, apply, bootstrap, observe]
       approved_plan_id:
-        description: Exact plan ID reviewed before a bootstrap apply
+        description: Exact persisted plan ID reviewed before apply (or bootstrap)
         required: false
         type: string
       approved_plan_hash:
-        description: Exact plan hash reviewed before a bootstrap apply
+        description: Exact persisted plan hash reviewed before apply (or bootstrap)
         required: false
         type: string
       approved_resources:
