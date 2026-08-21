@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { MemoryStateStore, ReferenceProvider } from "@omniseed/engine";
 import { loadOmniform } from "@omniseed/omniform";
-import { runReconciliation } from "../scripts/reconcile.mjs";
+import { formatReconciliationError, runReconciliation } from "../scripts/reconcile.mjs";
 
 const revision = "a".repeat(40);
 
@@ -116,4 +116,18 @@ test("bootstrap fails closed before Provider mutation for a stale plan or non-em
     operation: "bootstrap", desiredRevision: revision, environment: "test", store: new MemoryStateStore(), durableStore: occupied, providerHandles: providers,
     expectedPlanId: preview.result.id, expectedPlanHash: preview.result.hash, approvedResourceIds: ["lily"]
   }), /only when the durable company runtime state is empty/);
+});
+
+test("production diagnostics expose only safe Provider failure coordinates", () => {
+  const rendered = formatReconciliationError({
+    code: "provider_remote_error",
+    message: "Remote endpoint returned an error",
+    details: { method: "provider.apply", remote: { data: { code: "remote_http_error", status: 400, host: "api.vercel.com", token: "must-not-appear" } } }
+  });
+  assert.deepEqual(JSON.parse(rendered), {
+    code: "provider_remote_error",
+    message: "Remote endpoint returned an error",
+    provider: { method: "provider.apply", code: "remote_http_error", status: 400, host: "api.vercel.com" }
+  });
+  assert.doesNotMatch(rendered, /must-not-appear|token/);
 });
