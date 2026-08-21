@@ -99,7 +99,22 @@ function required(name) { const value = process.env[name]; if (!value) throw new
 function csv(value) { return String(value ?? "").split(",").map(item => item.trim()).filter(Boolean); }
 function gitRevision() { return execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(); }
 
+export function formatReconciliationError(error) {
+  const remote = error?.details?.remote;
+  const data = remote?.data ?? {};
+  return JSON.stringify({
+    code: error?.code ?? "error",
+    message: error?.message ?? "Reconciliation failed",
+    provider: remote ? {
+      method: error.details?.method,
+      code: data.code,
+      status: data.status,
+      host: data.host
+    } : undefined
+  });
+}
+
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const operation = process.argv[2] ?? "plan", dryRun = process.argv.includes("--dry-run");
-  runReconciliation({ operation, dryRun }).then(result => process.stdout.write(`${JSON.stringify(result, null, 2)}\n`)).catch(error => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });
+  runReconciliation({ operation, dryRun }).then(result => process.stdout.write(`${JSON.stringify(result, null, 2)}\n`)).catch(error => { process.stderr.write(`${formatReconciliationError(error)}\n`); process.exitCode = 1; });
 }
