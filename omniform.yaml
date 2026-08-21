@@ -172,12 +172,12 @@ spec:
               operation: https://omniseed-ecosystem-os.vercel.app/eve/v1/session
             project: omniseed-ecosystem-os
             provider: vercel
-            providerRevision: cb277769b7b618704e92755053b2e9c37e8a9cc2
+            providerRevision: 18f30fe3c33f0fb22e85b545b02ab4c5e1b8c6a4
             observationCredentialReference: LILY_RUNTIME_OBSERVATION_TOKEN
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: c104c345d0849aab51680baac3ee763d7af6455f
+              revision: f59a1f295b50153fc4db3354edde09705fd82b44
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -211,7 +211,7 @@ spec:
           companyBinding: omniseed_ecosystem
           endpoint: https://omniseed-ecosystem-os.vercel.app
           provider: vercel
-          providerRevision: cb277769b7b618704e92755053b2e9c37e8a9cc2
+          providerRevision: 18f30fe3c33f0fb22e85b545b02ab4c5e1b8c6a4
       - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access] }
       - id: omniseed_os
         name: OmniSeed OS
@@ -219,6 +219,8 @@ spec:
         offers:
           - human_operating_interface
         spec:
+          access:
+            stewardChat: public
           secretReferences:
             - LILY_SESSION_JWT_SECRET
           companyBinding:
@@ -245,17 +247,17 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.14
+            version: 1.0.0-alpha.15
           project: omniseed-ecosystem-os
           provider: vercel
-          providerRevision: cb277769b7b618704e92755053b2e9c37e8a9cc2
+          providerRevision: 18f30fe3c33f0fb22e85b545b02ab4c5e1b8c6a4
           services:
             - functions
             - deployment
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: c104c345d0849aab51680baac3ee763d7af6455f
+            revision: f59a1f295b50153fc4db3354edde09705fd82b44
     workflows:
       - { id: company_change_workflow, name: Company Change Workflow, provider: github, offers: [governed_change_process] }
       - { id: github_change_workflow, name: GitHub Change Workflow, provider: github, offers: [software_change_manage] }
@@ -281,7 +283,7 @@ spec:
       - { id: lily_authority, name: Lily Authority, provider: omniseed, offers: [stewardship_authority], spec: { allow: [read, propose], deny: [approve, self_escalate] } }
       - { id: review_policy, name: Required Review, provider: omniseed, offers: [required_review], spec: { pullRequestRequired: true } }
       - { id: invariant_catalogue, name: Ecosystem Invariants, provider: omniseed, offers: [invariant_policy] }
-      - { id: interface_policy, name: Interface Authority Policy, provider: omniseed, offers: [interface_authority] }
+      - { id: interface_policy, name: Interface Authority Policy, provider: omniseed, offers: [interface_authority], spec: { stewardChat: public, mutationsRequireGovernedOperations: true } }
       - id: reconciliation_policy
         name: Reconciliation Authority Policy
         provider: omniseed
