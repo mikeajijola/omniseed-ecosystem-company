@@ -15,7 +15,8 @@ The family Provider map is a default. Individual primitive resources bind their 
 [`scripts/reconcile.mjs`](scripts/reconcile.mjs) assembles the Engine from this approved declaration, a durable state endpoint, and an explicit installed-Provider configuration. The same declaration, exact Git revision, durable state, and equivalent Provider configuration return the same still-valid plan.
 
 The initial production bootstrap is also declarative and governed. First run
-`plan`, review its exact ID, hash, and resource actions, then dispatch
+`plan` with the explicit `bootstrap_preview` input enabled, review its exact ID,
+hash, and resource actions, then dispatch
 `bootstrap` with that ID, hash, and an explicit comma-separated list of approved
 resource IDs. The runner recomputes the plan, fails if either binding changed,
 resolves `plan.approve` from the declared operator identity, and invokes the
@@ -24,6 +25,13 @@ It applies only the selected resource actions, seeds the newly available durable
 state service, and invokes ordinary observation so desired and observed
 revisions remain separate. Bootstrap refuses a non-empty durable company state;
 all later runs use that durable state directly.
+
+The preview input is valid only for `plan`. It makes the first reviewed plan use
+the same empty in-memory runtime state that `bootstrap` recomputes, avoiding a
+circular dependency on the OS-hosted durable endpoint before the OS exists. It
+does not apply resources or create a second desired-state authority. Once the
+state service has been seeded, ordinary plans fail closed against that durable
+state and the preview input must not be used.
 
 For the smallest production slice the reviewed resource list is `lily,omniseed_os`.
 Nothing in the script contains Vercel project IDs, source repositories, package
