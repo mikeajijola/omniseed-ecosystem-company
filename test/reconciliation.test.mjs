@@ -84,6 +84,49 @@ test("bootstrap applies only exact reviewed declared resources and seeds durable
   assert.equal(state.binding.observedRevision, revision);
 });
 
+test("ordinary apply uses the exact durable reviewed plan and reconciles the approved resources", async () => {
+  const providers = [new ReferenceProvider({ id: "vercel", families: ["agents", "connectors"] })];
+  const store = new MemoryStateStore();
+  const preview = await runReconciliation({ desiredRevision: revision, environment: "test", store, providerHandles: providers });
+  const applied = await runReconciliation({
+    operation: "apply",
+    desiredRevision: revision,
+    environment: "test",
+    store,
+    providerHandles: providers,
+    expectedPlanId: preview.result.id,
+    expectedPlanHash: preview.result.hash,
+    approvedResourceIds: ["lily", "omniseed_os"],
+    approverPrincipal: "reviewer"
+  });
+  const state = await store.load("omniseed_ecosystem");
+  assert.deepEqual(state.deployed.map(item => item.id), ["lily", "omniseed_os"]);
+  assert.equal(applied.reviewedPlan.id, preview.result.id);
+  assert.equal(applied.reviewedPlan.hash, preview.result.hash);
+  assert.equal(applied.approval.actorId, "operator_identities:reviewer");
+  assert.equal(state.binding.desiredRevision, revision);
+  assert.equal(state.binding.observedRevision, revision);
+  assert.deepEqual(state.history.map(item => item.type), ["company_binding_recorded", "plan_generated", "plan_approved", "plan_applied", "reconciled"]);
+});
+
+test("ordinary apply fails closed for a stale hash, unknown resource, or absent durable plan", async () => {
+  const providers = [new ReferenceProvider({ id: "vercel", families: ["agents", "connectors"] })];
+  const store = new MemoryStateStore();
+  const preview = await runReconciliation({ desiredRevision: revision, environment: "test", store, providerHandles: providers });
+  await assert.rejects(runReconciliation({
+    operation: "apply", desiredRevision: revision, environment: "test", store, providerHandles: providers,
+    expectedPlanId: preview.result.id, expectedPlanHash: "0".repeat(64), approvedResourceIds: ["lily"]
+  }), /exact persisted reviewed plan/);
+  await assert.rejects(runReconciliation({
+    operation: "apply", desiredRevision: revision, environment: "test", store, providerHandles: providers,
+    expectedPlanId: preview.result.id, expectedPlanHash: preview.result.hash, approvedResourceIds: ["not_declared"]
+  }), /absent from the reviewed plan/);
+  await assert.rejects(runReconciliation({
+    operation: "apply", desiredRevision: revision, environment: "test", store: new MemoryStateStore(), providerHandles: providers,
+    expectedPlanId: preview.result.id, expectedPlanHash: preview.result.hash, approvedResourceIds: ["lily"]
+  }), /exact persisted reviewed plan/);
+});
+
 test("initial bootstrap preview uses the same empty state as bootstrap without contacting the not-yet-deployed state service", async () => {
   const preview = await runReconciliation({
     desiredRevision: revision,

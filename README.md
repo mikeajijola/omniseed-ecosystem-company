@@ -26,6 +26,15 @@ state service, and invokes ordinary observation so desired and observed
 revisions remain separate. Bootstrap refuses a non-empty durable company state;
 all later runs use that durable state directly.
 
+After bootstrap, dispatch `plan` against the exact approved `main` revision and
+review the persisted plan ID, hash, and resource actions. A separate protected
+`apply` dispatch must supply that exact ID and hash plus the explicitly approved
+resource IDs. The runner loads the reviewed plan from durable Engine state,
+records approval under the declared operator identity, invokes the ordinary
+`apply_plan` operation under the separately declared reconciler identity, and
+then observes the company. A missing, changed, already-consumed, or mismatched
+plan fails before Provider mutation.
+
 The preview input is valid only for `plan`. It makes the first reviewed plan use
 the same empty in-memory runtime state that `bootstrap` recomputes, avoiding a
 circular dependency on the OS-hosted durable endpoint before the OS exists. It
@@ -60,8 +69,8 @@ deployment-readiness wait while remaining bounded; the local Engine protocol's
 two-second test default is intentionally not used as a production deployment
 contract.
 
-The `production` environment is the human approval boundary for a bootstrap
-dispatch. The workflow actor is recorded as a principal of the declared
+The `production` environment is the human approval boundary for bootstrap and
+ordinary apply dispatches. The workflow actor is recorded as a principal of the declared
 `operator_identities` resource; the GitHub Actions reconciler has `plan.apply`
 but deliberately lacks `plan.approve`, so it cannot approve its own plan.
 
