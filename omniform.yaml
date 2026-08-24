@@ -178,7 +178,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: 9b6589ac8caa2e0c2e6006e837c2f3fb1f14b3bc
+              revision: d37c378e992ae66152e1a28d47a00238335a79de
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -248,7 +248,7 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.21
+            version: 1.0.0-alpha.22
           project: omniseed-ecosystem-os
           provider: vercel
           providerRevision: e1bedb8955e3cc0d248c94e6e0fd925d9f06646e
@@ -258,7 +258,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 9b6589ac8caa2e0c2e6006e837c2f3fb1f14b3bc
+            revision: d37c378e992ae66152e1a28d47a00238335a79de
     workflows:
       - { id: company_change_workflow, name: Company Change Workflow, provider: github, offers: [governed_change_process] }
       - { id: github_change_workflow, name: GitHub Change Workflow, provider: github, offers: [software_change_manage] }
