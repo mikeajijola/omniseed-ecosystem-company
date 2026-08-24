@@ -268,7 +268,7 @@ spec:
         offers: [governed_change_process]
         spec:
           provider: github
-          providerRevision: 0933832167dec08bba66f61fc83d5d9cc08317fb
+          providerRevision: 7ea6cbfbb04ae3bdc1d8e9709eb82d91f885dadc
           products: [Repositories, Pull Requests, Checks, Apps/API]
           repository: mikeajijola/omniseed-ecosystem-company
           baseBranch: main
@@ -278,6 +278,8 @@ spec:
           mergePolicy:
             requireApproval: true
             requirePassingChecks: true
+            trustedApprovalChecks:
+              - { name: governed-company-change-approval, appSlug: github-actions }
             mergeMethod: squash
       - { id: github_change_workflow, name: GitHub Change Workflow, provider: github, offers: [software_change_manage] }
       - { id: github_conformance_workflow, name: GitHub Conformance Workflow, provider: github, offers: [conformance_workflow] }

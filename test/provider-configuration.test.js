@@ -20,6 +20,9 @@ test("production Provider configuration uses organisation Providers and credenti
   assert.doesNotMatch(serialized, /provider-eve|github-actions-provider|vercel-functions-provider/);
   assert.equal(providers.find(item => item.id === "vercel").configuration.desiredRevision, "a".repeat(40));
   assert.equal(providers.find(item => item.id === "vercel").configuration.statusProjectId, "omniseed-ecosystem-os");
+  assert.deepEqual(providers.find(item => item.id === "github").configuration.mergePolicy.trustedApprovalChecks, [
+    { name: "governed-company-change-approval", appSlug: "github-actions" }
+  ]);
   for (const provider of providers) {
     assert.equal(provider.startupTimeoutMs, 15_000, `${provider.id} must tolerate production process startup latency`);
     assert.equal(provider.requestTimeoutMs, 360_000, `${provider.id} must permit declared Provider readiness waits`);
@@ -51,4 +54,14 @@ test("production reconciliation installs the exact GitHub Provider revision decl
   const revision = company.match(/id: company_change_workflow[\s\S]*?providerRevision: ([0-9a-f]{40})/)?.[1];
   assert.ok(revision);
   assert.match(workflow, new RegExp(`repository: mikeajijola/omniseed-provider-github, ref: ${revision}`));
+});
+
+test("governed approval check is exact-head, same-repository, and protected", async () => {
+  const workflow = await readFile(new URL("../.github/workflows/company-change-approval.yml", import.meta.url), "utf8");
+  assert.match(workflow, /head\.repo\.full_name == github\.repository/);
+  assert.match(workflow, /startsWith\(github\.event\.pull_request\.head\.ref, 'omniseed\/'\)/);
+  assert.match(workflow, /ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
+  assert.match(workflow, /environment: production/);
+  assert.match(workflow, /name: governed-company-change-approval/);
+  assert.doesNotMatch(workflow, /secrets\./);
 });

@@ -1,0 +1,52 @@
+name: Governed Company Change approval
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths: [omniform.yaml]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: company-change-approval-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  approval:
+    name: governed-company-change-approval
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'omniseed/')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout exact proposed head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with: { node-version: "24", cache: npm }
+      - name: Verify Provider-authored proposal binding
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PROPOSED_BRANCH: ${{ github.event.pull_request.head.ref }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+          test "${PROPOSED_BRANCH#omniseed/}" != "$PROPOSED_BRANCH"
+          node --input-type=module -e '
+            const body = process.env.PR_BODY ?? "";
+            if (!/OmniSeed governed Company Change `ccp_[0-9a-f]{16}`\./.test(body)) throw new Error("PR is not bound to an OmniSeed proposal ID");
+            if (!/Proposal hash: `[0-9a-f]{64}`/.test(body)) throw new Error("PR is not bound to an exact proposal hash");
+          '
+          changed="$(git diff --name-only "$EXPECTED_BASE_SHA"...HEAD)"
+          test "$changed" = "omniform.yaml"
+      - run: npm ci
+      - run: npm run validate
+      - run: npm test
