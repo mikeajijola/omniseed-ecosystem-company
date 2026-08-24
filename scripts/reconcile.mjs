@@ -132,6 +132,9 @@ function gitRevision() { return execFileSync("git", ["rev-parse", "HEAD"], { enc
 export function formatReconciliationError(error) {
   const remote = error?.details?.remote;
   const data = remote?.data ?? {};
+  const frames = Array.isArray(data.frames) ? data.frames
+    .filter(frame => typeof frame?.function === "string" && Number.isInteger(frame?.line))
+    .map(frame => ({ function: frame.function, line: frame.line })) : undefined;
   return JSON.stringify({
     code: error?.code ?? "error",
     message: error?.message ?? "Reconciliation failed",
@@ -139,7 +142,9 @@ export function formatReconciliationError(error) {
       method: error.details?.method,
       code: data.code,
       status: data.status,
-      host: data.host
+      host: data.host,
+      exceptionType: typeof data.exceptionType === "string" ? data.exceptionType : undefined,
+      frames: frames?.length ? frames : undefined
     } : undefined
   });
 }
