@@ -1,0 +1,35 @@
+name: Invoke governed OmniSeed operation
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Ordinary governed OmniSeed operation
+        required: true
+        type: choice
+        options: [inspect_company_change, approve_company_change, apply_company_change, merge_company_change, observe_company]
+      input_json:
+        description: Exact JSON object supplied as operation input
+        required: false
+        default: "{}"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  invoke:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: "24" }
+      - name: Invoke ordinary governed operation
+        env:
+          OMNISEED_OPERATION: ${{ inputs.operation }}
+          OMNISEED_OPERATION_INPUT: ${{ inputs.input_json }}
+          OMNISEED_OPERATION_ENDPOINT: https://omniseed-ecosystem-os.vercel.app
+          OMNISEED_OPERATOR_TOKEN: ${{ secrets.OMNISEED_OPERATOR_TOKEN }}
+        run: node scripts/invoke-operation.mjs
