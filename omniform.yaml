@@ -178,7 +178,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: d37c378e992ae66152e1a28d47a00238335a79de
+              revision: d3895d1ff21fe8e4de1464e362b0b3fca29fe636
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -186,6 +186,7 @@ spec:
               - OMNISEED_STATE_TOKEN
               - LILY_SESSION_JWT_SECRET
               - LILY_RUNTIME_OBSERVATION_TOKEN
+              - GITHUB_PROVIDER_TOKEN
             session:
               credentialReference: LILY_SESSION_JWT_SECRET
               issuer: omniseed
@@ -224,6 +225,7 @@ spec:
             stewardChat: public
           secretReferences:
             - LILY_SESSION_JWT_SECRET
+            - GITHUB_PROVIDER_TOKEN
           companyBinding:
             companyId: omniseed_ecosystem
             path: omniform.yaml
@@ -237,7 +239,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: 474b63c9f6dcd9050300e82574c237241605b67d
+            implementationRevision: d3895d1ff21fe8e4de1464e362b0b3fca29fe636
             provider: neon
             service: postgresql
           environment: production
@@ -258,9 +260,25 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: d37c378e992ae66152e1a28d47a00238335a79de
+            revision: d3895d1ff21fe8e4de1464e362b0b3fca29fe636
     workflows:
-      - { id: company_change_workflow, name: Company Change Workflow, provider: github, offers: [governed_change_process] }
+      - id: company_change_workflow
+        name: Company Change Workflow
+        provider: github
+        offers: [governed_change_process]
+        spec:
+          provider: github
+          providerRevision: 0933832167dec08bba66f61fc83d5d9cc08317fb
+          products: [Repositories, Pull Requests, Checks, Apps/API]
+          repository: mikeajijola/omniseed-ecosystem-company
+          baseBranch: main
+          path: omniform.yaml
+          branchPrefix: omniseed/
+          credentialReference: GITHUB_PROVIDER_TOKEN
+          mergePolicy:
+            requireApproval: true
+            requirePassingChecks: true
+            mergeMethod: squash
       - { id: github_change_workflow, name: GitHub Change Workflow, provider: github, offers: [software_change_manage] }
       - { id: github_conformance_workflow, name: GitHub Conformance Workflow, provider: github, offers: [conformance_workflow] }
       - id: ecosystem_reconciliation_workflow
@@ -339,7 +357,7 @@ spec:
     identity:
       - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
       - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
-      - { id: operator_identities, name: Operator Identities, offers: [operator_identity], spec: { authority: [plan.approve] } }
+      - { id: operator_identities, name: Operator Identities, offers: [operator_identity], spec: { authority: [plan.approve, company_change.approve, company_change.apply, company_change.merge] } }
       - { id: reconciler_identity, name: Reconciler Service Identity, provider: github, offers: [reconciler_identity], spec: { product: GitHub Actions OIDC, authority: [company.bind, plan.create, plan.apply, state.reconcile], selfApproval: false } }
   operations:
     - { id: inspect_company, capability: steward_omniseed_ecosystem, description: Inspect desired and observed company state, input: {}, output: {}, mutation: false, permissions: [company.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
@@ -348,6 +366,7 @@ spec:
     - { id: inspect_company_change, capability: steward_omniseed_ecosystem, description: Inspect company change proposals, input: {}, output: {}, mutation: false, permissions: [company_change.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
     - { id: approve_company_change, capability: steward_omniseed_ecosystem, description: Approve an exact company change, input: {}, output: {}, mutation: true, permissions: [company_change.approve], approval: required, interfaces: [ui, api, cli, agent] }
     - { id: apply_company_change, capability: steward_omniseed_ecosystem, description: Submit an approved company change as a pull request, input: {}, output: {}, mutation: true, permissions: [company_change.apply], approval: required, interfaces: [ui, api, cli, agent] }
+    - { id: merge_company_change, capability: steward_omniseed_ecosystem, description: Merge an unchanged approved company-change pull request after Provider-observed review and checks satisfy policy, input: {}, output: {}, mutation: true, permissions: [company_change.merge], approval: required, interfaces: [ui, api, cli] }
     - { id: generate_plan, capability: reconcile_omniseed_ecosystem, description: Generate and persist a deterministic reconciliation plan from approved desired state and current observed state, input: {}, output: {}, mutation: false, permissions: [plan.create], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
     - { id: apply_plan, capability: reconcile_omniseed_ecosystem, description: Apply only actions from an exact persisted and approved reconciliation plan, input: {}, output: {}, mutation: true, permissions: [plan.apply], approval: required, interfaces: [ui, api, cli, agent, machine] }
     - { id: observe_company, capability: reconcile_omniseed_ecosystem, description: Observe deployed primitive resources through their selected Providers and persist evidence without changing desired state, input: {}, output: {}, mutation: true, permissions: [state.reconcile], approval: policy, interfaces: [lily, ui, api, cli, agent, machine] }
