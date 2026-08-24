@@ -178,7 +178,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: 096b848b2488beb36e68653822a5e197fede3417
+              revision: 1170ed6c57f377605ac50ab4364adefcf132d06a
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -239,7 +239,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: 096b848b2488beb36e68653822a5e197fede3417
+            implementationRevision: 1170ed6c57f377605ac50ab4364adefcf132d06a
             provider: neon
             service: postgresql
           environment: production
@@ -250,7 +250,7 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.22
+            version: 1.0.0-alpha.23
           project: omniseed-ecosystem-os
           provider: vercel
           providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
@@ -260,7 +260,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 096b848b2488beb36e68653822a5e197fede3417
+            revision: 1170ed6c57f377605ac50ab4364adefcf132d06a
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
@@ -291,10 +291,10 @@ spec:
         spec:
           implementation:
             enginePackage: "@omniseed/engine"
-            engineVersion: 1.0.0-alpha.12
+            engineVersion: 1.0.0-alpha.13
             lifecycle: [load, compile, plan, approve, apply, observe, persist, compile]
             product: GitHub Actions
-            sourceRevision: c6d245e15b409b1b023fba55ed117301825743d6
+            sourceRevision: 84b4829547cea1fee60f61b94e4f1bb4c995c692
           source:
             repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
             branch: main
