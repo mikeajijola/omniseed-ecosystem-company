@@ -42,3 +42,13 @@ test("production reconciliation fails closed on Vercel identity and project scop
   assert.match(workflow, /secrets\.VERCEL_TOKEN/);
   assert.doesNotMatch(workflow, /echo[^\n]*VERCEL_TOKEN/);
 });
+
+test("production reconciliation installs the exact GitHub Provider revision declared by the company", async () => {
+  const [workflow, company] = await Promise.all([
+    readFile(new URL("../.github/workflows/reconcile.yml", import.meta.url), "utf8"),
+    readFile(new URL("../omniform.yaml", import.meta.url), "utf8")
+  ]);
+  const revision = company.match(/id: company_change_workflow[\s\S]*?providerRevision: ([0-9a-f]{40})/)?.[1];
+  assert.ok(revision);
+  assert.match(workflow, new RegExp(`repository: mikeajijola/omniseed-provider-github, ref: ${revision}`));
+});
