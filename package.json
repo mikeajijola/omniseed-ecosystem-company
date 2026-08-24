@@ -9,7 +9,7 @@
     "reconcile:dry-run": "node scripts/reconcile.mjs plan --dry-run"
   },
   "dependencies": {
-    "@omniseed/engine": "1.0.0-alpha.9",
+    "@omniseed/engine": "1.0.0-alpha.10",
     "@omniseed/omniform": "1.0.0-alpha.5"
   },
   "engines": {
