@@ -159,7 +159,7 @@ spec:
             runtimeModelConfiguration: LILY_MODEL
           implementation:
             framework: eve
-            model: nvidia/nemotron-3.5-lightning-free
+            model: poolside/laguna-s-2.1-free
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
             revision: c3bd1d69f3f501e550b7950f0c27eb813ebe762e
