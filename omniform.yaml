@@ -162,7 +162,7 @@ spec:
             model: poolside/laguna-s-2.1-free
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
-            revision: c3bd1d69f3f501e550b7950f0c27eb813ebe762e
+            revision: 52c9ccee940219b7a5dc9de3d1d8b6e08f432c12
           kind: ai_agent
           organisationalIdentity: lily
           runtime:
@@ -178,7 +178,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: 1170ed6c57f377605ac50ab4364adefcf132d06a
+              revision: baf081e52bad5ab420ebd44633d433cef3b7578f
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -239,7 +239,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: 1170ed6c57f377605ac50ab4364adefcf132d06a
+            implementationRevision: baf081e52bad5ab420ebd44633d433cef3b7578f
             provider: neon
             service: postgresql
           environment: production
@@ -250,7 +250,7 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.23
+            version: 1.0.0-alpha.24
           project: omniseed-ecosystem-os
           provider: vercel
           providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
@@ -260,7 +260,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 1170ed6c57f377605ac50ab4364adefcf132d06a
+            revision: baf081e52bad5ab420ebd44633d433cef3b7578f
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
