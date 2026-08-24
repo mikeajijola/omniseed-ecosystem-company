@@ -159,6 +159,7 @@ spec:
             runtimeModelConfiguration: LILY_MODEL
           implementation:
             framework: eve
+            model: nvidia/nemotron-3.5-lightning-free
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
             revision: c3bd1d69f3f501e550b7950f0c27eb813ebe762e
@@ -172,7 +173,7 @@ spec:
               operation: https://omniseed-ecosystem-os.vercel.app/eve/v1/session
             project: omniseed-ecosystem-os
             provider: vercel
-            providerRevision: 18f30fe3c33f0fb22e85b545b02ab4c5e1b8c6a4
+            providerRevision: e1bedb8955e3cc0d248c94e6e0fd925d9f06646e
             observationCredentialReference: LILY_RUNTIME_OBSERVATION_TOKEN
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
@@ -211,7 +212,7 @@ spec:
           companyBinding: omniseed_ecosystem
           endpoint: https://omniseed-ecosystem-os.vercel.app
           provider: vercel
-          providerRevision: 18f30fe3c33f0fb22e85b545b02ab4c5e1b8c6a4
+          providerRevision: e1bedb8955e3cc0d248c94e6e0fd925d9f06646e
       - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access] }
       - id: omniseed_os
         name: OmniSeed OS
@@ -250,7 +251,7 @@ spec:
             version: 1.0.0-alpha.16
           project: omniseed-ecosystem-os
           provider: vercel
-          providerRevision: 18f30fe3c33f0fb22e85b545b02ab4c5e1b8c6a4
+          providerRevision: e1bedb8955e3cc0d248c94e6e0fd925d9f06646e
           services:
             - functions
             - deployment
