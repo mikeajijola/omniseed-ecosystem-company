@@ -5,7 +5,8 @@ metadata:
   name: OmniSeed Ecosystem
   labels: { instance: production_reference }
 spec:
-  intent: Build, govern, operate, and improve the public OmniSeed Company-as-Code ecosystem.
+  intent: Build, govern, operate, and improve the public OmniSeed Company-as-Code
+          ecosystem with observable evidence.
   governance:
     desiredState:
       repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
