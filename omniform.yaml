@@ -173,7 +173,7 @@ spec:
               operation: https://omniseed-ecosystem-os.vercel.app/eve/v1/session
             project: omniseed-ecosystem-os
             provider: vercel
-            providerRevision: efaf2d5766b204c0a05e7a844e0a28819962840d
+            providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
             observationCredentialReference: LILY_RUNTIME_OBSERVATION_TOKEN
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
@@ -213,7 +213,7 @@ spec:
           companyBinding: omniseed_ecosystem
           endpoint: https://omniseed-ecosystem-os.vercel.app
           provider: vercel
-          providerRevision: efaf2d5766b204c0a05e7a844e0a28819962840d
+          providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
       - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access] }
       - id: omniseed_os
         name: OmniSeed OS
@@ -253,7 +253,7 @@ spec:
             version: 1.0.0-alpha.22
           project: omniseed-ecosystem-os
           provider: vercel
-          providerRevision: efaf2d5766b204c0a05e7a844e0a28819962840d
+          providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
           services:
             - functions
             - deployment
