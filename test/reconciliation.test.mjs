@@ -178,4 +178,19 @@ test("production diagnostics expose only safe Provider failure coordinates", () 
     provider: { method: "provider.apply", code: "remote_http_error", status: 400, host: "api.vercel.com" }
   });
   assert.doesNotMatch(rendered, /must-not-appear|token/);
+
+  const internal = formatReconciliationError({
+    code: "provider_remote_error",
+    message: "Provider encountered an unexpected internal error",
+    details: { method: "provider.apply", remote: { data: {
+      code: "provider_internal_error", exceptionType: "TypeError",
+      frames: [{ function: "apply", line: 501, file: "/secret/path" }],
+      exceptionMessage: "credential-must-not-appear"
+    } } }
+  });
+  assert.deepEqual(JSON.parse(internal).provider, {
+    method: "provider.apply", code: "provider_internal_error", exceptionType: "TypeError",
+    frames: [{ function: "apply", line: 501 }]
+  });
+  assert.doesNotMatch(internal, /credential-must-not-appear|secret\/path|exceptionMessage/);
 });
