@@ -17,7 +17,12 @@ export function productionProviderConfiguration(env = process.env) {
         repository: "mikeajijola/omniseed-ecosystem-company",
         baseBranch: "main",
         branchPrefix: "omniseed/",
-        mergePolicy: { requireApproval: true, requirePassingChecks: true, mergeMethod: "squash" }
+        mergePolicy: {
+          requireApproval: true,
+          requirePassingChecks: true,
+          trustedApprovalChecks: [{ name: "governed-company-change-approval", appSlug: "github-actions" }],
+          mergeMethod: "squash"
+        }
       }
     },
     {

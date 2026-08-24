@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: actions/checkout@v6
-        with: { repository: mikeajijola/omniseed-provider-github, ref: 0933832167dec08bba66f61fc83d5d9cc08317fb, path: providers/github }
+        with: { repository: mikeajijola/omniseed-provider-github, ref: 7ea6cbfbb04ae3bdc1d8e9709eb82d91f885dadc, path: providers/github }
       - uses: actions/checkout@v6
         with: { repository: mikeajijola/omniseed-provider-vercel, ref: 40696040fb9fe954afe271189063a13f9aeec1b9, path: providers/vercel }
       - uses: actions/checkout@v6
