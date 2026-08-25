@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { parseOmniform } from "@omniseed/omniform";
 import { productionProviderConfiguration } from "../scripts/provider-configuration.mjs";
 
 test("production Provider configuration uses organisation Providers and credential references only", () => {
@@ -46,14 +47,17 @@ test("production reconciliation fails closed on Vercel identity and project scop
   assert.doesNotMatch(workflow, /echo[^\n]*VERCEL_TOKEN/);
 });
 
-test("production reconciliation installs the exact GitHub Provider revision declared by the company", async () => {
+test("production reconciliation resolves and installs the exact GitHub Provider revision declared by the company", async () => {
   const [workflow, company] = await Promise.all([
     readFile(new URL("../.github/workflows/reconcile.yml", import.meta.url), "utf8"),
     readFile(new URL("../omniform.yaml", import.meta.url), "utf8")
   ]);
   const revision = company.match(/id: company_change_workflow[\s\S]*?providerRevision: ([0-9a-f]{40})/)?.[1];
   assert.ok(revision);
-  assert.match(workflow, new RegExp(`repository: mikeajijola/omniseed-provider-github, ref: ${revision}`));
+  assert.match(workflow, /node scripts\/provider-revisions\.mjs >> "\$GITHUB_OUTPUT"/);
+  assert.match(workflow, /repository: mikeajijola\/omniseed-provider-github, ref: "\$\{\{ steps\.provider-revisions\.outputs\.github \}\}"/);
+  const { declaredProviderRevision } = await import("../scripts/provider-revisions.mjs");
+  assert.equal(declaredProviderRevision(parseOmniform(company), "github"), revision);
 });
 
 test("governed approval check is exact-head, same-repository, and protected", async () => {
