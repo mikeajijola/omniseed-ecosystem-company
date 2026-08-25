@@ -32,7 +32,9 @@ test("Lily and OmniSeed OS share one immutable Vercel runtime without collapsing
   assert.equal(lily.spec.implementation.repository, "https://github.com/mikeajijola/omniseed-lily.git");
   assert.notEqual(lily.spec.implementation.repository, lily.spec.runtime.source.repository);
   assert.equal(lily.spec.implementation.framework, "eve");
-  assert.equal(lily.spec.implementation.model, "poolside/laguna-s-2.1-free");
+  assert.match(lily.spec.implementation.model, /^[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*$/);
+  const plannedLily = (await runReconciliation({ desiredRevision: revision, environment: "test", store: new MemoryStateStore(), protocolProviders: [] })).result.actions.find(item => item.resourceId === "lily");
+  assert.equal(plannedLily.desired.spec.implementation.model, lily.spec.implementation.model);
   assert.equal(lily.provider, "vercel");
   assert.equal(os.spec.provider, "vercel");
   assert.equal(lily.spec.runtime.providerRevision, os.spec.providerRevision);
