@@ -92,7 +92,7 @@ spec:
       participants:
         - { resource: lily, role: steward, supplies: [stewardship_agency] }
         - { resource: stewardship_skills, supplies: [company_reasoning] }
-        - { resource: omniseed_operations, supplies: [governed_operations_access] }
+        - { resource: omniseed_os, supplies: [governed_operations_access] }
         - { resource: company_change_workflow, supplies: [governed_change_process] }
         - { resource: lily_authority, supplies: [stewardship_authority] }
         - { resource: company_observer, supplies: [company_state_observation] }
@@ -132,7 +132,7 @@ spec:
       capability: reconcile_omniseed_ecosystem
       participants:
         - { resource: ecosystem_reconciliation_workflow, supplies: [approved_desired_state_resolution, deterministic_reconciliation] }
-        - { resource: omniseed_operations, supplies: [provider_operation_boundary] }
+        - { resource: omniseed_os, supplies: [provider_operation_boundary] }
         - { resource: reconciliation_policy, supplies: [reconciliation_authority] }
         - { resource: engine_runtime_state, supplies: [runtime_state_continuity] }
         - { resource: reconciliation_observer, supplies: [reconciliation_observation] }
@@ -190,7 +190,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: c55ea0be1d4c4c3b2f1e467d1531646f86b5082a
+              revision: 25148278cd37cadad877adf9d3242d796f1892be
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -213,25 +213,14 @@ spec:
       - { id: engineering_skills, name: Software Engineering Skills, provider: omniseed, offers: [software_engineering] }
       - { id: conformance_runner, name: Ecosystem Conformance Runner, provider: omniseed, offers: [conformance_skill] }
     connectors:
-      - id: omniseed_operations
-        name: Governed OmniSeed Operations
-        provider: vercel
-        offers:
-          - governed_operations_access
-          - provider_operation_boundary
-        spec:
-          authentication:
-            credentialReference: OMNISEED_OPERATION_TOKEN
-          companyBinding: omniseed_ecosystem
-          endpoint: https://omniseed-ecosystem-os.vercel.app
-          provider: vercel
-          providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
       - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access] }
       - id: omniseed_os
         name: OmniSeed OS
         provider: vercel
         offers:
           - human_operating_interface
+          - governed_operations_access
+          - provider_operation_boundary
         spec:
           access:
             stewardChat: public
@@ -251,7 +240,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: c55ea0be1d4c4c3b2f1e467d1531646f86b5082a
+            implementationRevision: 25148278cd37cadad877adf9d3242d796f1892be
             provider: neon
             service: postgresql
           environment: production
@@ -262,7 +251,7 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.28
+            version: 1.0.0-alpha.32
           project: omniseed-ecosystem-os
           provider: vercel
           providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
@@ -272,7 +261,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: c55ea0be1d4c4c3b2f1e467d1531646f86b5082a
+            revision: 25148278cd37cadad877adf9d3242d796f1892be
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
@@ -280,7 +269,7 @@ spec:
         offers: [governed_change_process]
         spec:
           provider: github
-          providerRevision: 7ea6cbfbb04ae3bdc1d8e9709eb82d91f885dadc
+          providerRevision: b1e1a42883a2c0f3e439d340eff0816ca02d3025
           products: [Repositories, Pull Requests, Checks, Apps/API]
           repository: mikeajijola/omniseed-ecosystem-company
           baseBranch: main
@@ -303,10 +292,10 @@ spec:
         spec:
           implementation:
             enginePackage: "@omniseed/engine"
-            engineVersion: 1.0.0-alpha.16
+            engineVersion: 1.0.0-alpha.18
             lifecycle: [load, compile, plan, approve, apply, observe, persist, compile]
             product: GitHub Actions
-            sourceRevision: 4adf9173a98420eb5924e0dc5de617c6e7991402
+            sourceRevision: 9713dd4dfcbb36de9f21524f1ba4203f3b0fe41b
           source:
             repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
             branch: main
