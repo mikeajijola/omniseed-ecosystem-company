@@ -7,7 +7,7 @@ on:
         description: Ordinary governed OmniSeed operation
         required: true
         type: choice
-        options: [inspect_company_change, approve_company_change, apply_company_change, merge_company_change, observe_company]
+        options: [inspect_company_change, propose_company_change, approve_company_change, apply_company_change, merge_company_change, observe_company]
       input_json:
         description: Exact JSON object supplied as operation input
         required: false
