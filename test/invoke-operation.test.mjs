@@ -21,6 +21,14 @@ test("operator dispatch permits proposals through the ordinary Company Change op
   assert.deepEqual(JSON.parse(request.init.body), { input: { reason: "Declare the reviewed runtime revision.", patch: [] } });
 });
 
+test("operator dispatch permits read-only Company Change preview", async () => {
+  let request;
+  const result = await invokeGovernedOperation({ operation: "preview_company_change", inputJson: '{"proposalId":"ccp_reviewed"}', endpoint: "https://omniseed.example.test", credential, fetchImpl: async (url, init) => { request = { url, init }; return Response.json({ ok: true, result: { validation: { valid: true } } }); } });
+  assert.equal(result.result.validation.valid, true);
+  assert.match(request.url, /\/api\/operations\/preview_company_change:invoke$/);
+  assert.deepEqual(JSON.parse(request.init.body), { input: { proposalId: "ccp_reviewed" } });
+});
+
 test("operator dispatch rejects arbitrary operations, malformed input, and missing credentials", async () => {
   await assert.rejects(invokeGovernedOperation({ operation: "github.api", inputJson: "{}", endpoint: "https://omniseed.example.test", credential }), /not permitted/);
   await assert.rejects(invokeGovernedOperation({ operation: "observe_company", inputJson: "not-json", endpoint: "https://omniseed.example.test", credential }), /valid JSON/);

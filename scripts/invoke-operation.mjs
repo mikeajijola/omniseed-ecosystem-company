@@ -2,6 +2,7 @@
 
 const allowed = new Set([
   "inspect_company_change",
+  "preview_company_change",
   "propose_company_change",
   "approve_company_change",
   "apply_company_change",
