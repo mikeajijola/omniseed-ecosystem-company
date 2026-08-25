@@ -20,4 +20,5 @@ export function declaredProviderRevision(declaration, providerId) {
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const declaration = await loadOmniform(process.argv[2] ?? "omniform.yaml");
   process.stdout.write(`github=${declaredProviderRevision(declaration, "github")}\n`);
+  process.stdout.write(`google=${declaredProviderRevision(declaration, "google")}\n`);
 }

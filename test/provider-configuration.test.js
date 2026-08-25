@@ -8,6 +8,7 @@ test("production Provider configuration uses organisation Providers and credenti
   const providers = productionProviderConfiguration({
     OMNISEED_PROVIDER_ROOT: "/providers",
     OMNISEED_DESIRED_REVISION: "a".repeat(40),
+    OMNISEED_GOOGLE_PROVIDER_REVISION: "b".repeat(40),
     VERCEL_TEAM_ID: "team_1",
     VERCEL_STATUS_PROJECT_ID: "omniseed-ecosystem-os",
     NEON_PROJECT_ID: "quiet-tree-123",
@@ -15,7 +16,7 @@ test("production Provider configuration uses organisation Providers and credenti
     NEON_API_KEY: "must-not-appear",
     DATABASE_URL: "must-not-appear"
   });
-  assert.deepEqual(providers.map(item => item.id), ["github", "vercel", "neon", "omniseed"]);
+  assert.deepEqual(providers.map(item => item.id), ["github", "vercel", "neon", "omniseed", "google"]);
   const serialized = JSON.stringify(providers);
   assert.doesNotMatch(serialized, /must-not-appear/);
   assert.doesNotMatch(serialized, /provider-eve|github-actions-provider|vercel-functions-provider/);
@@ -24,6 +25,9 @@ test("production Provider configuration uses organisation Providers and credenti
   assert.deepEqual(providers.find(item => item.id === "github").configuration.mergePolicy.trustedApprovalChecks, [
     { name: "governed-company-change-approval", appSlug: "github-actions" }
   ]);
+  assert.deepEqual(providers.find(item => item.id === "google").configuration.credentialReferenceEnvironment, {
+    GOOGLE_GENERATIVE_AI_API_KEY: "GOOGLE_GENERATIVE_AI_API_KEY"
+  });
   for (const provider of providers) {
     assert.equal(provider.startupTimeoutMs, 15_000, `${provider.id} must tolerate production process startup latency`);
     assert.equal(provider.requestTimeoutMs, 360_000, `${provider.id} must permit declared Provider readiness waits`);
@@ -47,7 +51,7 @@ test("production reconciliation fails closed on Vercel identity and project scop
   assert.doesNotMatch(workflow, /echo[^\n]*VERCEL_TOKEN/);
 });
 
-test("production reconciliation resolves and installs the exact GitHub Provider revision declared by the company", async () => {
+test("production reconciliation resolves and installs exact declared Provider revisions", async () => {
   const [workflow, company] = await Promise.all([
     readFile(new URL("../.github/workflows/reconcile.yml", import.meta.url), "utf8"),
     readFile(new URL("../omniform.yaml", import.meta.url), "utf8")
@@ -56,8 +60,10 @@ test("production reconciliation resolves and installs the exact GitHub Provider 
   assert.ok(revision);
   assert.match(workflow, /node scripts\/provider-revisions\.mjs >> "\$GITHUB_OUTPUT"/);
   assert.match(workflow, /repository: mikeajijola\/omniseed-provider-github, ref: "\$\{\{ steps\.provider-revisions\.outputs\.github \}\}"/);
+  assert.match(workflow, /repository: mikeajijola\/omniseed-provider-google, ref: "\$\{\{ steps\.provider-revisions\.outputs\.google \}\}"/);
   const { declaredProviderRevision } = await import("../scripts/provider-revisions.mjs");
   assert.equal(declaredProviderRevision(parseOmniform(company), "github"), revision);
+  assert.equal(declaredProviderRevision(parseOmniform(company), "google"), "a94e6101214d807897ca701e5b96050d7de054d7");
 });
 
 test("governed approval check is exact-head, same-repository, and protected", async () => {

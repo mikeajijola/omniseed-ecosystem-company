@@ -63,6 +63,17 @@ export function productionProviderConfiguration(env = process.env) {
       }
     }
   ];
+  if (env.OMNISEED_GOOGLE_PROVIDER_REVISION) providers.push({
+    id: "google",
+    command: "python3",
+    args: [resolve(root, "google/provider/google_provider.py")],
+    ...productionTransport,
+    configuration: {
+      credentialReferenceEnvironment: {
+        GOOGLE_GENERATIVE_AI_API_KEY: "GOOGLE_GENERATIVE_AI_API_KEY"
+      }
+    }
+  });
   if (env.OMNICEDE_DATABASE_PATH) providers.push({
     id: "omnicede",
     command: resolve(root, "omnicede/target/release/omniseed_provider"),
