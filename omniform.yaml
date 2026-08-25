@@ -171,7 +171,7 @@ spec:
             runtimeModelConfiguration: LILY_MODEL
           implementation:
             framework: eve
-            model: poolside/laguna-s-2.1-free
+            model: alibaba/qwen3.8-27b
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
             revision: 119158ae6dbcef3bd2fd9db58a75060520e7c34b
