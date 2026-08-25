@@ -32,7 +32,15 @@ test("Lily and OmniSeed OS share one immutable Vercel runtime without collapsing
   assert.equal(lily.spec.implementation.repository, "https://github.com/mikeajijola/omniseed-lily.git");
   assert.notEqual(lily.spec.implementation.repository, lily.spec.runtime.source.repository);
   assert.equal(lily.spec.implementation.framework, "eve");
-  assert.match(lily.spec.implementation.model, /^[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*$/);
+  const inference = declaration.spec.resources.inference?.find(item => item.id === "lily_inference");
+  if (inference) {
+    assert.equal(lily.spec.implementation.model, inference.spec.model, "the Agent must use its independently declared inference primitive");
+    assert.equal(inference.provider, "google");
+    assert.match(inference.spec.model, /^gemini-[a-z0-9._-]+$/);
+    assert.ok(lily.spec.runtime.secretReferences.includes(inference.spec.credentialReference));
+  } else {
+    assert.match(lily.spec.implementation.model, /^[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*$/, "legacy AI Gateway declarations use provider/model syntax");
+  }
   const plannedLily = (await runReconciliation({ desiredRevision: revision, environment: "test", store: new MemoryStateStore(), protocolProviders: [] })).result.actions.find(item => item.resourceId === "lily");
   assert.equal(plannedLily.desired.spec.implementation.model, lily.spec.implementation.model);
   assert.equal(lily.provider, "vercel");
