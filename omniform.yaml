@@ -27,6 +27,7 @@ spec:
     observations: { provider: omniseed }
     memory: { provider: omnicede }
     identity: { provider: github }
+    inference: { provider: google }
   capabilities:
     - id: steward_omniseed_ecosystem
       name: Steward OmniSeed Ecosystem
@@ -41,6 +42,8 @@ spec:
         - { id: company_state_observation, primitiveFamily: observations }
         - { id: organisational_context, primitiveFamily: memory }
         - { id: steward_identity, primitiveFamily: identity }
+        - id: stewardship_inference
+          primitiveFamily: inference
       realisations: [lily_stewardship]
     - id: maintain_omniseed_engine
       name: Maintain OmniSeed Engine
@@ -98,6 +101,9 @@ spec:
         - { resource: company_observer, supplies: [company_state_observation] }
         - { resource: ecosystem_memory, supplies: [organisational_context] }
         - { resource: lily_identity, supplies: [steward_identity] }
+        - resource: lily_inference
+          supplies:
+            - stewardship_inference
     - id: engine_development
       name: Engine development, review, and release
       capability: maintain_omniseed_engine
@@ -171,10 +177,10 @@ spec:
             runtimeModelConfiguration: LILY_MODEL
           implementation:
             framework: eve
-            model: alibaba/qwen3.8-27b
+            model: gemini-2.5-flash
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
-            revision: 119158ae6dbcef3bd2fd9db58a75060520e7c34b
+            revision: c1b402c9342c5b33e9c45878219c8df39400913c
           kind: ai_agent
           organisationalIdentity: lily
           runtime:
@@ -190,7 +196,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: 25148278cd37cadad877adf9d3242d796f1892be
+              revision: 75b75df3b55b40b9731819fc9c36bdf27d281082
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -199,6 +205,7 @@ spec:
               - LILY_SESSION_JWT_SECRET
               - LILY_RUNTIME_OBSERVATION_TOKEN
               - GITHUB_PROVIDER_TOKEN
+              - GOOGLE_GENERATIVE_AI_API_KEY
             session:
               credentialReference: LILY_SESSION_JWT_SECRET
               issuer: omniseed
@@ -206,7 +213,6 @@ spec:
               subject: omniseed-os:omniseed_ecosystem
             services:
               - functions
-              - ai_gateway
       - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency], spec: { kind: people_and_agents } }
     skills:
       - { id: stewardship_skills, name: Stewardship Skills, provider: omniseed, offers: [company_reasoning], spec: { abilities: [inspect, reason, explain, propose, delegate, escalate] } }
@@ -240,7 +246,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: 25148278cd37cadad877adf9d3242d796f1892be
+            implementationRevision: 75b75df3b55b40b9731819fc9c36bdf27d281082
             provider: neon
             service: postgresql
           environment: production
@@ -251,7 +257,7 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.32
+            version: 1.0.0-alpha.35
           project: omniseed-ecosystem-os
           provider: vercel
           providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
@@ -261,7 +267,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 25148278cd37cadad877adf9d3242d796f1892be
+            revision: 75b75df3b55b40b9731819fc9c36bdf27d281082
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
@@ -292,7 +298,7 @@ spec:
         spec:
           implementation:
             enginePackage: "@omniseed/engine"
-            engineVersion: 1.0.0-alpha.18
+            engineVersion: 1.0.0-alpha.20
             lifecycle: [load, compile, plan, approve, apply, observe, persist, compile]
             product: GitHub Actions
             sourceRevision: 9713dd4dfcbb36de9f21524f1ba4203f3b0fe41b
@@ -362,6 +368,8 @@ spec:
       - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
       - { id: operator_identities, name: Operator Identities, offers: [operator_identity], spec: { authority: [plan.approve, company_change.approve, company_change.apply, company_change.merge] } }
       - { id: reconciler_identity, name: Reconciler Service Identity, provider: github, offers: [reconciler_identity], spec: { product: GitHub Actions OIDC, authority: [company.bind, plan.create, plan.apply, state.reconcile], selfApproval: false } }
+    inference:
+      - { id: lily_inference, name: Lily Gemini inference, risk: high, spec: { model: gemini-2.5-flash, product: Gemini API, providerRevision: a94e6101214d807897ca701e5b96050d7de054d7, credentialReference: GOOGLE_GENERATIVE_AI_API_KEY }, offers: [ stewardship_inference ], provider: google }
   operations:
     - { id: inspect_company, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect desired and observed company state, permissions: [ company.read ] }
     - { id: get_capability, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect a capability trace, permissions: [ capability.read ] }
