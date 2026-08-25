@@ -148,9 +148,21 @@ spec:
           authority:
             - company.read
             - capability.read
+            - realisation.read
+            - provider_binding.read
+            - activity.read
             - company_change.propose
+            - company_change.read
+            - company_change.apply
+            - company_change.merge
             - plan.create
+            - plan.read
+            - plan.apply
             - state.reconcile
+            - company_work.create
+            - company_work.read
+            - company_work.record
+            - company_work.cancel
           bootstrap:
             company: omniseed_ecosystem
             credentialReference: OMNISEED_OPERATION_TOKEN
@@ -162,7 +174,7 @@ spec:
             model: poolside/laguna-s-2.1-free
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
-            revision: 52c9ccee940219b7a5dc9de3d1d8b6e08f432c12
+            revision: 119158ae6dbcef3bd2fd9db58a75060520e7c34b
           kind: ai_agent
           organisationalIdentity: lily
           runtime:
@@ -178,7 +190,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: baf081e52bad5ab420ebd44633d433cef3b7578f
+              revision: c55ea0be1d4c4c3b2f1e467d1531646f86b5082a
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -239,7 +251,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: baf081e52bad5ab420ebd44633d433cef3b7578f
+            implementationRevision: c55ea0be1d4c4c3b2f1e467d1531646f86b5082a
             provider: neon
             service: postgresql
           environment: production
@@ -250,7 +262,7 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.24
+            version: 1.0.0-alpha.28
           project: omniseed-ecosystem-os
           provider: vercel
           providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
@@ -260,7 +272,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: baf081e52bad5ab420ebd44633d433cef3b7578f
+            revision: c55ea0be1d4c4c3b2f1e467d1531646f86b5082a
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
@@ -291,17 +303,17 @@ spec:
         spec:
           implementation:
             enginePackage: "@omniseed/engine"
-            engineVersion: 1.0.0-alpha.13
+            engineVersion: 1.0.0-alpha.16
             lifecycle: [load, compile, plan, approve, apply, observe, persist, compile]
             product: GitHub Actions
-            sourceRevision: 84b4829547cea1fee60f61b94e4f1bb4c995c692
+            sourceRevision: 4adf9173a98420eb5924e0dc5de617c6e7991402
           source:
             repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
             branch: main
             path: omniform.yaml
           triggers: [governed_dispatch]
     policies:
-      - { id: lily_authority, name: Lily Authority, provider: omniseed, offers: [stewardship_authority], spec: { allow: [read, propose], deny: [approve, self_escalate] } }
+      - { id: lily_authority, name: Lily Authority, provider: omniseed, offers: [stewardship_authority], spec: { deny: [ approve, self_escalate, direct_provider_mutation ], allow: [ read, propose, apply_after_independent_approval, provider_merge_after_policy, observe ] } }
       - { id: review_policy, name: Required Review, provider: omniseed, offers: [required_review], spec: { pullRequestRequired: true } }
       - { id: invariant_catalogue, name: Ecosystem Invariants, provider: omniseed, offers: [invariant_policy] }
       - { id: interface_policy, name: Interface Authority Policy, provider: omniseed, offers: [interface_authority], spec: { stewardChat: public, mutationsRequireGovernedOperations: true } }
@@ -355,21 +367,31 @@ spec:
           consistency: optimistic_concurrency
           credentialReferences: [DATABASE_URL, OMNISEED_STATE_TOKEN]
           product: PostgreSQL
-          requiredRecords: [company_binding, desired_revision, observed_revision, plans, approvals, provider_actions, observations, evidence, activity, reconciliation_history]
+          requiredRecords: [ company_binding, desired_revision, observed_revision, plans, approvals, provider_actions, observations, evidence, activity, reconciliation_history, company_work_runs, agent_session_cursor ]
     identity:
       - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
       - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
       - { id: operator_identities, name: Operator Identities, offers: [operator_identity], spec: { authority: [plan.approve, company_change.approve, company_change.apply, company_change.merge] } }
       - { id: reconciler_identity, name: Reconciler Service Identity, provider: github, offers: [reconciler_identity], spec: { product: GitHub Actions OIDC, authority: [company.bind, plan.create, plan.apply, state.reconcile], selfApproval: false } }
   operations:
-    - { id: inspect_company, capability: steward_omniseed_ecosystem, description: Inspect desired and observed company state, input: {}, output: {}, mutation: false, permissions: [company.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
-    - { id: get_capability, capability: steward_omniseed_ecosystem, description: Inspect a capability trace, input: {}, output: {}, mutation: false, permissions: [capability.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
-    - { id: propose_company_change, capability: steward_omniseed_ecosystem, description: Propose a PR-governed desired-state change, input: {}, output: {}, mutation: true, permissions: [company_change.propose], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
-    - { id: inspect_company_change, capability: steward_omniseed_ecosystem, description: Inspect company change proposals, input: {}, output: {}, mutation: false, permissions: [company_change.read], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
-    - { id: approve_company_change, capability: steward_omniseed_ecosystem, description: Approve an exact company change, input: {}, output: {}, mutation: true, permissions: [company_change.approve], approval: required, interfaces: [ui, api, cli, agent] }
-    - { id: apply_company_change, capability: steward_omniseed_ecosystem, description: Submit an approved company change as a pull request, input: {}, output: {}, mutation: true, permissions: [company_change.apply], approval: required, interfaces: [ui, api, cli, agent] }
-    - { id: merge_company_change, capability: steward_omniseed_ecosystem, description: Merge an unchanged approved company-change pull request after Provider-observed review and checks satisfy policy, input: {}, output: {}, mutation: true, permissions: [company_change.merge], approval: required, interfaces: [ui, api, cli] }
-    - { id: generate_plan, capability: reconcile_omniseed_ecosystem, description: Generate and persist a deterministic reconciliation plan from approved desired state and current observed state, input: {}, output: {}, mutation: false, permissions: [plan.create], approval: none, interfaces: [lily, ui, api, cli, agent, machine] }
-    - { id: apply_plan, capability: reconcile_omniseed_ecosystem, description: Apply only actions from an exact persisted and approved reconciliation plan, input: {}, output: {}, mutation: true, permissions: [plan.apply], approval: required, interfaces: [ui, api, cli, agent, machine] }
-    - { id: observe_company, capability: reconcile_omniseed_ecosystem, description: Observe deployed primitive resources through their selected Providers and persist evidence without changing desired state, input: {}, output: {}, mutation: true, permissions: [state.reconcile], approval: policy, interfaces: [lily, ui, api, cli, agent, machine] }
-    - { id: bind_company, capability: reconcile_omniseed_ecosystem, description: Bind this runtime to an exact approved merged desired revision without copying the company definition into runtime state, input: {}, output: {}, mutation: true, permissions: [company.bind], approval: policy, interfaces: [api, cli, machine] }
+    - { id: inspect_company, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect desired and observed company state, permissions: [ company.read ] }
+    - { id: get_capability, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect a capability trace, permissions: [ capability.read ] }
+    - { id: inspect_realisation, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: "Inspect a realisation through primitive participants, Provider bindings, observations, and evidence", permissions: [ realisation.read ] }
+    - { id: inspect_provider_binding, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect the Provider organisation selected at a primitive boundary, permissions: [ provider_binding.read ] }
+    - { id: list_activity, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect evidence-backed company Activity including durable Agent work, permissions: [ activity.read ] }
+    - { id: start_company_work, input: {}, output: {}, approval: none, mutation: true, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api ], description: Start a durable company-work run for the declared steward, permissions: [ company_work.create ] }
+    - { id: list_company_work, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api ], description: List durable company-work runs, permissions: [ company_work.read ] }
+    - { id: get_company_work, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api ], description: Inspect a safe company-work timeline projection, permissions: [ company_work.read ] }
+    - { id: continue_company_work, input: {}, output: {}, approval: none, mutation: true, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api ], description: Resume the same durable steward session after input or a governance event, permissions: [ company_work.create ] }
+    - { id: cancel_company_work, input: {}, output: {}, approval: none, mutation: true, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api ], description: Cancel active steward work without changing desired state, permissions: [ company_work.cancel ] }
+    - { id: propose_company_change, input: {}, output: {}, approval: none, mutation: true, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Propose a PR-governed desired-state change, permissions: [ company_change.propose ] }
+    - { id: inspect_company_change, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect company change proposals, permissions: [ company_change.read ] }
+    - { id: preview_company_change, input: {}, output: {}, approval: none, mutation: false, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Validate and inspect the impact of an exact persisted company change without mutation, permissions: [ company_change.read ] }
+    - { id: approve_company_change, input: {}, output: {}, approval: required, mutation: true, capability: steward_omniseed_ecosystem, interfaces: [ ui, api, cli, agent ], description: Approve an exact company change, permissions: [ company_change.approve ] }
+    - { id: apply_company_change, input: {}, output: {}, approval: required, mutation: true, capability: steward_omniseed_ecosystem, interfaces: [ ui, api, cli, agent ], description: Submit an approved company change as a pull request, permissions: [ company_change.apply ] }
+    - { id: merge_company_change, input: {}, output: {}, approval: required, mutation: true, capability: steward_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent ], description: Merge an unchanged approved company-change pull request after Provider-observed review and checks satisfy policy, permissions: [ company_change.merge ] }
+    - { id: generate_plan, input: {}, output: {}, approval: none, mutation: false, capability: reconcile_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Generate and persist a deterministic reconciliation plan from approved desired state and current observed state, permissions: [ plan.create ] }
+    - { id: get_plan, input: {}, output: {}, approval: none, mutation: false, capability: reconcile_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect an exact persisted reconciliation plan and its independent approval, permissions: [ plan.read ] }
+    - { id: apply_plan, input: {}, output: {}, approval: required, mutation: true, capability: reconcile_omniseed_ecosystem, interfaces: [ ui, api, cli, agent, machine ], description: Apply only actions from an exact persisted and approved reconciliation plan, permissions: [ plan.apply ] }
+    - { id: observe_company, input: {}, output: {}, approval: policy, mutation: true, capability: reconcile_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Observe deployed primitive resources through their selected Providers and persist evidence without changing desired state, permissions: [ state.reconcile ] }
+    - { id: bind_company, input: {}, output: {}, approval: policy, mutation: true, capability: reconcile_omniseed_ecosystem, interfaces: [ api, cli, machine ], description: Bind this runtime to an exact approved merged desired revision without copying the company definition into runtime state, permissions: [ company.bind ] }
