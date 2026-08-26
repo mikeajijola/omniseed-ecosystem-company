@@ -196,7 +196,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: e3628b67d19c302a0d6b94f31cc31ccfbe608b8e
+              revision: bf8a80fa30e2f62284c834502b1f93f0f26c3f9e
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -246,7 +246,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: e3628b67d19c302a0d6b94f31cc31ccfbe608b8e
+            implementationRevision: bf8a80fa30e2f62284c834502b1f93f0f26c3f9e
             provider: neon
             service: postgresql
           environment: production
@@ -257,7 +257,7 @@ spec:
           optional: true
           implementation:
             package: "@omniseed/os"
-            version: 1.0.0-alpha.37
+            version: 1.0.0-alpha.38
           project: omniseed-ecosystem-os
           provider: vercel
           providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
@@ -267,7 +267,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: e3628b67d19c302a0d6b94f31cc31ccfbe608b8e
+            revision: bf8a80fa30e2f62284c834502b1f93f0f26c3f9e
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
