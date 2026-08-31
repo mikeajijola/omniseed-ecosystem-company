@@ -87,3 +87,26 @@ test("memory selections distinguish durable runtime state from organisational me
   assert.equal(resources.get("ecosystem_memory").spec.expectedObservation.type, "omnicede_memory_state");
   assert.equal(resources.get("engine_runtime_state").spec.expectedObservation.type, "neon_memory_state");
 });
+
+test("identity selections preserve principal kinds and approval separation", async () => {
+  const company = parse(await readFile(new URL("../omniform.yaml", import.meta.url), "utf8"));
+  assert.equal(company.spec.providers.identity.provider, "github");
+  const identities = new Map(company.spec.resources.identity.map(item => [item.id, item]));
+  assert.deepEqual(
+    Object.fromEntries([...identities].map(([id, item]) => [id, { provider: item.provider, kind: item.spec.kind }])),
+    {
+      lily_identity: { provider: "omniseed", kind: "agent" },
+      contributor_identities: { provider: "github", kind: "human" },
+      operator_identities: { provider: "github", kind: "human" },
+      reconciler_identity: { provider: "github", kind: "service" }
+    }
+  );
+  assert.deepEqual(identities.get("operator_identities").spec.authority, [
+    "plan.approve", "company_change.approve", "company_change.apply", "company_change.merge"
+  ]);
+  assert.deepEqual(identities.get("reconciler_identity").spec.authority, [
+    "company.bind", "plan.create", "plan.apply", "state.reconcile"
+  ]);
+  assert.equal(identities.get("reconciler_identity").spec.selfApproval, false);
+  assert.equal(identities.get("reconciler_identity").spec.authority.includes("plan.approve"), false);
+});

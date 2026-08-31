@@ -611,10 +611,10 @@ spec:
             type: neon_memory_state
             evidenceType: neon_memory_observation
     identity:
-      - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
-      - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
-      - { id: operator_identities, name: Operator Identities, offers: [operator_identity], spec: { authority: [plan.approve, company_change.approve, company_change.apply, company_change.merge] } }
-      - { id: reconciler_identity, name: Reconciler Service Identity, provider: github, offers: [reconciler_identity], spec: { product: GitHub Actions OIDC, authority: [company.bind, plan.create, plan.apply, state.reconcile], selfApproval: false } }
+      - { id: lily_identity, name: Lily Organisational Identity, provider: omniseed, offers: [steward_identity], spec: { kind: agent, subject: lily } }
+      - { id: contributor_identities, name: Contributor Identities, provider: github, offers: [contributor_identity], spec: { kind: human, product: GitHub users } }
+      - { id: operator_identities, name: Operator Identities, provider: github, offers: [operator_identity], spec: { kind: human, product: GitHub users, authority: [plan.approve, company_change.approve, company_change.apply, company_change.merge] } }
+      - { id: reconciler_identity, name: Reconciler Service Identity, provider: github, offers: [reconciler_identity], spec: { kind: service, product: GitHub Actions OIDC, authority: [company.bind, plan.create, plan.apply, state.reconcile], selfApproval: false } }
     inference:
       - { id: lily_inference, name: Lily Gemini inference, risk: high, spec: { model: gemini-2.5-flash, product: Gemini API, providerRevision: a94e6101214d807897ca701e5b96050d7de054d7, credentialReference: GOOGLE_GENERATIVE_AI_API_KEY }, offers: [ stewardship_inference ], provider: google }
   operations:

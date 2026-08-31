@@ -14,6 +14,8 @@ The family Provider map is a default. Individual primitive resources bind their 
 
 The rationale and complete requirement mapping for the split memory selection is recorded in [`docs/memory-provider-decision.md`](docs/memory-provider-decision.md). Neon is the family default; `ecosystem_memory` deliberately overrides it with Omnicede.
 
+Identity bindings follow the same rule: GitHub supplies the human and service identities used by repository governance, while OmniSeed recognises Lily's Agent subject at the company operation boundary. The kinds and unchanged authority separation are recorded in [`docs/identity-provider-decision.md`](docs/identity-provider-decision.md).
+
 ## Repeatable reconciliation
 
 [`scripts/reconcile.mjs`](scripts/reconcile.mjs) assembles the Engine from this approved declaration, a durable state endpoint, and an explicit installed-Provider configuration. The same declaration, exact Git revision, durable state, and equivalent Provider configuration return the same still-valid plan.
