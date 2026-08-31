@@ -27,7 +27,7 @@ spec:
     workflows: { provider: github }
     policies: { provider: omniseed }
     observations: { provider: omniseed }
-    memory: { provider: omnicede }
+    memory: { provider: neon }
     identity: { provider: github }
     inference: { provider: google }
   capabilities:
@@ -607,6 +607,9 @@ spec:
           credentialReferences: [DATABASE_URL, OMNISEED_STATE_TOKEN]
           product: PostgreSQL
           requiredRecords: [ company_binding, desired_revision, observed_revision, plans, approvals, provider_actions, observations, evidence, activity, reconciliation_history, company_work_runs, agent_session_cursor ]
+          expectedObservation:
+            type: neon_memory_state
+            evidenceType: neon_memory_observation
     identity:
       - { id: lily_identity, name: Lily Organisational Identity, offers: [steward_identity] }
       - { id: contributor_identities, name: Contributor Identities, offers: [contributor_identity] }
