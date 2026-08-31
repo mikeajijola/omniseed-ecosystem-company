@@ -5,7 +5,7 @@ metadata:
   name: OmniSeed Ecosystem
   labels: { instance: production_reference }
 spec:
-  intent: Build, govern, operate, and improve the public OmniSeed Company-as-Code ecosystem.
+  intent: Build, govern, grow, distribute, support, and sustain the public OmniSeed Company-as-Code ecosystem as an operating business.
   governance:
     desiredState:
       repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
@@ -18,6 +18,8 @@ spec:
   outcomes:
     - id: truthful_self_hosting
       description: OmniSeed can explain with evidence how its own ecosystem company is run.
+    - id: sustainable_ecosystem_business
+      description: OmniSeed can develop, distribute, support, govern, and commercialise its ecosystem without hiding capability gaps.
   providers:
     agents: { provider: vercel }
     skills: { provider: omniseed }
@@ -47,6 +49,7 @@ spec:
       realisations: [lily_stewardship]
     - id: maintain_omniseed_engine
       name: Maintain OmniSeed Engine
+      description: Maintain, review, and release the core Engine that resolves and reconciles implementation-independent company declarations.
       requires:
         - { id: engineering_agency, primitiveFamily: agents }
         - { id: software_engineering, primitiveFamily: skills }
@@ -59,6 +62,7 @@ spec:
       realisations: [engine_development]
     - id: validate_ecosystem_conformance
       name: Validate Ecosystem Conformance
+      description: Verify public ecosystem components against shared contracts and architectural invariants.
       requires:
         - { id: conformance_skill, primitiveFamily: skills }
         - { id: public_repository_access, primitiveFamily: connectors }
@@ -88,6 +92,246 @@ spec:
         - { id: reconciliation_observation, primitiveFamily: observations }
         - { id: reconciler_identity, primitiveFamily: identity }
       realisations: [ecosystem_reconciliation]
+    # Strategy and company governance
+    - id: set_company_strategy_and_governance
+      name: Set Company Strategy and Governance
+      description: Define OmniSeed's direction, outcomes, decision rights, portfolio priorities, and accountable governance.
+      autonomy: { mode: recommend }
+      requires:
+        - { id: strategy_and_governance_agency, primitiveFamily: agents }
+        - { id: strategic_planning_and_governance, primitiveFamily: skills }
+        - { id: governed_strategy_decisions, primitiveFamily: workflows }
+        - { id: decision_rights_and_guardrails, primitiveFamily: policies }
+        - { id: strategy_performance_observation, primitiveFamily: observations }
+        - { id: strategic_context, primitiveFamily: memory }
+    # Product and roadmap management
+    - id: manage_product_and_roadmap
+      name: Manage Product and Roadmap
+      description: Discover user needs and govern coherent roadmaps for Omniform, the Engine, OmniSeed OS, and ecosystem services.
+      requires:
+        - { id: product_management_agency, primitiveFamily: agents }
+        - { id: product_discovery_and_prioritisation, primitiveFamily: skills }
+        - { id: roadmap_governance, primitiveFamily: workflows }
+        - { id: product_feedback_access, primitiveFamily: connectors }
+        - { id: product_outcome_observation, primitiveFamily: observations }
+        - { id: product_knowledge, primitiveFamily: memory }
+    # Product engineering and release
+    - id: engineer_and_release_omniseed_products
+      name: Engineer and Release OmniSeed Products
+      description: Design, build, verify, package, and release the Engine, OS, Omniform, and related public product components.
+      requires:
+        - { id: product_engineering_agency, primitiveFamily: agents }
+        - { id: product_engineering_and_release, primitiveFamily: skills }
+        - { id: product_source_and_distribution_access, primitiveFamily: connectors }
+        - { id: verified_release_process, primitiveFamily: workflows }
+        - { id: release_quality_policy, primitiveFamily: policies }
+        - { id: release_observation, primitiveFamily: observations }
+    # Provider ecosystem
+    - id: grow_and_manage_provider_ecosystem
+      name: Grow and Manage Provider Ecosystem
+      description: Discover, qualify, integrate, document, review, and retire Provider implementations across primitive families.
+      requires:
+        - { id: provider_ecosystem_agency, primitiveFamily: agents }
+        - { id: provider_discovery_and_lifecycle, primitiveFamily: skills }
+        - { id: provider_integration_access, primitiveFamily: connectors }
+        - { id: provider_qualification_lifecycle, primitiveFamily: workflows }
+        - { id: provider_acceptance_policy, primitiveFamily: policies }
+        - { id: provider_ecosystem_observation, primitiveFamily: observations }
+    # Architecture governance
+    - id: govern_omniseed_architecture
+      name: Govern OmniSeed Architecture
+      description: Maintain implementation-independent contracts, architectural decisions, compatibility boundaries, and coherent evolution across the ecosystem.
+      requires:
+        - { id: architecture_governance_agency, primitiveFamily: agents }
+        - { id: architecture_and_contract_design, primitiveFamily: skills }
+        - { id: architecture_decision_process, primitiveFamily: workflows }
+        - { id: architecture_invariants, primitiveFamily: policies }
+        - { id: architecture_conformance_observation, primitiveFamily: observations }
+        - { id: architecture_decision_memory, primitiveFamily: memory }
+    # Research and experimentation
+    - id: conduct_research_and_experiments
+      name: Conduct Research and Experiments
+      description: Investigate technical and business hypotheses through bounded, ethical experiments and retain reusable findings.
+      autonomy: { mode: experiment }
+      requires:
+        - { id: research_agency, primitiveFamily: agents }
+        - { id: research_and_experiment_design, primitiveFamily: skills }
+        - { id: research_source_access, primitiveFamily: connectors }
+        - { id: experiment_governance, primitiveFamily: workflows }
+        - { id: research_ethics_and_risk_policy, primitiveFamily: policies }
+        - { id: research_knowledge, primitiveFamily: memory }
+    # Security, risk, privacy, and compliance
+    - id: manage_security_risk_privacy_and_compliance
+      name: Manage Security, Risk, Privacy, and Compliance
+      description: Identify and treat security, operational, privacy, and compliance risks while preserving accountable evidence.
+      requires:
+        - { id: risk_management_agency, primitiveFamily: agents }
+        - { id: security_privacy_and_compliance, primitiveFamily: skills }
+        - { id: risk_treatment_process, primitiveFamily: workflows }
+        - { id: security_privacy_compliance_policy, primitiveFamily: policies }
+        - { id: control_effectiveness_observation, primitiveFamily: observations }
+        - { id: risk_register_memory, primitiveFamily: memory }
+        - { id: accountable_risk_identity, primitiveFamily: identity }
+    # Documentation and education
+    - id: produce_documentation_and_education
+      name: Produce Documentation and Education
+      description: Create, maintain, teach, and assess accurate learning paths for users, contributors, operators, and Providers.
+      requires:
+        - { id: documentation_education_agency, primitiveFamily: agents }
+        - { id: technical_writing_and_instruction, primitiveFamily: skills }
+        - { id: documentation_source_access, primitiveFamily: connectors }
+        - { id: documentation_review_and_release, primitiveFamily: workflows }
+        - { id: learning_effectiveness_observation, primitiveFamily: observations }
+        - { id: education_knowledge, primitiveFamily: memory }
+    # Publishing and communications
+    - id: publish_content_and_communications
+      name: Publish Content and Communications
+      description: Operate truthful public publishing, announcements, website content, release communications, and stakeholder updates.
+      requires:
+        - { id: publishing_agency, primitiveFamily: agents }
+        - { id: editorial_and_communications, primitiveFamily: skills }
+        - { id: publishing_channel_access, primitiveFamily: connectors }
+        - { id: editorial_review_and_publish, primitiveFamily: workflows }
+        - { id: communications_policy, primitiveFamily: policies }
+        - { id: publishing_observation, primitiveFamily: observations }
+    # Community and open source
+    - id: grow_open_source_community
+      name: Grow Open Source Community
+      description: Welcome, support, govern, recognise, and retain healthy participation across OmniSeed's open-source projects.
+      requires:
+        - { id: community_agency, primitiveFamily: agents }
+        - { id: community_and_contribution_management, primitiveFamily: skills }
+        - { id: community_channel_access, primitiveFamily: connectors }
+        - { id: contribution_and_moderation_process, primitiveFamily: workflows }
+        - { id: community_conduct_policy, primitiveFamily: policies }
+        - { id: community_health_observation, primitiveFamily: observations }
+        - { id: contributor_identity, primitiveFamily: identity }
+    # Partnerships and ecosystem development
+    - id: develop_partnerships_and_ecosystem
+      name: Develop Partnerships and Ecosystem
+      description: Form and manage aligned technology, distribution, research, and delivery relationships with accountable mutual outcomes.
+      requires:
+        - { id: partnership_agency, primitiveFamily: agents }
+        - { id: partnership_development, primitiveFamily: skills }
+        - { id: partner_relationship_access, primitiveFamily: connectors }
+        - { id: partnership_lifecycle, primitiveFamily: workflows }
+        - { id: partnership_authority_policy, primitiveFamily: policies }
+        - { id: partnership_outcome_observation, primitiveFamily: observations }
+        - { id: partner_context, primitiveFamily: memory }
+    # Accelerator and founder programmes
+    - id: operate_accelerator_programmes
+      name: Operate Accelerator Programmes
+      description: Design and run accountable programmes that help founders and teams build ecosystem-compatible companies and products.
+      requires:
+        - { id: programme_operations_agency, primitiveFamily: agents }
+        - { id: accelerator_programme_design, primitiveFamily: skills }
+        - { id: applicant_and_cohort_access, primitiveFamily: connectors }
+        - { id: selection_and_cohort_delivery, primitiveFamily: workflows }
+        - { id: programme_fairness_policy, primitiveFamily: policies }
+        - { id: programme_outcome_observation, primitiveFamily: observations }
+        - { id: programme_knowledge, primitiveFamily: memory }
+    # Customer operations
+    - id: onboard_support_and_retain_customers
+      name: Onboard, Support, and Retain Customers
+      description: Help users and customers adopt OmniSeed successfully, resolve needs, and achieve durable outcomes across their lifecycle.
+      requires:
+        - { id: customer_operations_agency, primitiveFamily: agents }
+        - { id: onboarding_success_and_support, primitiveFamily: skills }
+        - { id: customer_service_access, primitiveFamily: connectors }
+        - { id: customer_lifecycle_process, primitiveFamily: workflows }
+        - { id: customer_data_and_service_policy, primitiveFamily: policies }
+        - { id: customer_outcome_observation, primitiveFamily: observations }
+        - { id: customer_context, primitiveFamily: memory }
+        - { id: customer_service_identity, primitiveFamily: identity }
+    # Marketing and demand generation
+    - id: generate_market_demand
+      name: Generate Market Demand
+      description: Understand target audiences and run measurable, truthful programmes that create awareness, interest, and qualified demand.
+      requires:
+        - { id: marketing_agency, primitiveFamily: agents }
+        - { id: market_insight_and_demand_generation, primitiveFamily: skills }
+        - { id: marketing_channel_access, primitiveFamily: connectors }
+        - { id: campaign_lifecycle, primitiveFamily: workflows }
+        - { id: marketing_claims_and_consent_policy, primitiveFamily: policies }
+        - { id: demand_observation, primitiveFamily: observations }
+        - { id: market_knowledge, primitiveFamily: memory }
+    # Sales and commercial operations
+    - id: manage_sales_revenue_and_commercial_operations
+      name: Manage Sales, Revenue, and Commercial Operations
+      description: Qualify opportunities, form suitable commercial agreements, manage revenue operations, and forecast without assuming a single business model.
+      requires:
+        - { id: commercial_agency, primitiveFamily: agents }
+        - { id: sales_and_revenue_operations, primitiveFamily: skills }
+        - { id: commercial_relationship_access, primitiveFamily: connectors }
+        - { id: opportunity_to_revenue_process, primitiveFamily: workflows }
+        - { id: commercial_authority_policy, primitiveFamily: policies }
+        - { id: commercial_performance_observation, primitiveFamily: observations }
+        - { id: commercial_context, primitiveFamily: memory }
+        - { id: commercial_actor_identity, primitiveFamily: identity }
+    # Finance, accounting, and procurement
+    - id: manage_finance_accounting_and_procurement
+      name: Manage Finance, Accounting, and Procurement
+      description: Plan and control cash, budgets, accounting, tax, purchasing, and financial reporting with appropriate separation of duties.
+      requires:
+        - { id: finance_operations_agency, primitiveFamily: agents }
+        - { id: finance_accounting_and_procurement, primitiveFamily: skills }
+        - { id: financial_system_access, primitiveFamily: connectors }
+        - { id: financial_control_process, primitiveFamily: workflows }
+        - { id: financial_authority_policy, primitiveFamily: policies }
+        - { id: financial_observation, primitiveFamily: observations }
+        - { id: financial_records, primitiveFamily: memory }
+        - { id: accountable_finance_identity, primitiveFamily: identity }
+    # Legal, corporate administration, IP, and licensing
+    - id: manage_legal_corporate_ip_and_licensing
+      name: Manage Legal, Corporate, IP, and Licensing
+      description: Maintain corporate obligations, contracts, intellectual property, open-source licensing, and legally accountable records.
+      requires:
+        - { id: legal_administration_agency, primitiveFamily: agents }
+        - { id: legal_corporate_ip_and_licensing, primitiveFamily: skills }
+        - { id: legal_information_access, primitiveFamily: connectors }
+        - { id: legal_review_and_records_process, primitiveFamily: workflows }
+        - { id: legal_and_licensing_policy, primitiveFamily: policies }
+        - { id: legal_obligation_observation, primitiveFamily: observations }
+        - { id: corporate_legal_records, primitiveFamily: memory }
+        - { id: authorised_legal_identity, primitiveFamily: identity }
+    # People and contributors
+    - id: develop_people_and_contributors
+      name: Develop People and Contributors
+      description: Plan capacity, recruit or onboard suitable participants, support learning and wellbeing, and manage fair contributor lifecycles.
+      requires:
+        - { id: people_operations_agency, primitiveFamily: agents }
+        - { id: people_contributor_and_learning_management, primitiveFamily: skills }
+        - { id: people_system_access, primitiveFamily: connectors }
+        - { id: people_lifecycle_process, primitiveFamily: workflows }
+        - { id: fair_people_practices_policy, primitiveFamily: policies }
+        - { id: people_outcome_observation, primitiveFamily: observations }
+        - { id: people_context, primitiveFamily: memory }
+        - { id: participant_identity, primitiveFamily: identity }
+    # Analytics, measurement, and knowledge
+    - id: measure_business_and_manage_knowledge
+      name: Measure Business and Manage Knowledge
+      description: Define trustworthy measures, analyse performance, preserve organisational knowledge, and make evidence available for decisions.
+      requires:
+        - { id: analytics_knowledge_agency, primitiveFamily: agents }
+        - { id: analytics_measurement_and_knowledge, primitiveFamily: skills }
+        - { id: governed_data_access, primitiveFamily: connectors }
+        - { id: measurement_and_knowledge_process, primitiveFamily: workflows }
+        - { id: data_governance_policy, primitiveFamily: policies }
+        - { id: business_measurement_observation, primitiveFamily: observations }
+        - { id: organisational_knowledge, primitiveFamily: memory }
+    # Incident management and business continuity
+    - id: respond_to_incidents_and_ensure_continuity
+      name: Respond to Incidents and Ensure Continuity
+      description: Prepare for disruption, coordinate response and recovery, communicate responsibly, and learn from incidents.
+      requires:
+        - { id: incident_response_agency, primitiveFamily: agents }
+        - { id: incident_response_and_continuity, primitiveFamily: skills }
+        - { id: operational_response_access, primitiveFamily: connectors }
+        - { id: incident_and_recovery_process, primitiveFamily: workflows }
+        - { id: incident_authority_policy, primitiveFamily: policies }
+        - { id: resilience_observation, primitiveFamily: observations }
+        - { id: incident_learning_memory, primitiveFamily: memory }
+        - { id: incident_commander_identity, primitiveFamily: identity }
   realisations:
     - id: lily_stewardship
       name: Lily reference stewardship
