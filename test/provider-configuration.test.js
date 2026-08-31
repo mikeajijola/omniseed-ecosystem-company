@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { parse } from "yaml";
 import { parseOmniform } from "@omniseed/omniform";
 import { productionProviderConfiguration } from "../scripts/provider-configuration.mjs";
 
@@ -74,4 +75,15 @@ test("governed approval check is exact-head, same-repository, and protected", as
   assert.match(workflow, /environment: production/);
   assert.match(workflow, /name: governed-company-change-approval/);
   assert.doesNotMatch(workflow, /secrets\./);
+});
+test("memory selections distinguish durable runtime state from organisational memory", async () => {
+  const company = parse(await readFile(new URL("../omniform.yaml", import.meta.url), "utf8"));
+  assert.equal(company.spec.providers.memory.provider, "neon");
+  const resources = new Map(company.spec.resources.memory.map(item => [item.id, item]));
+  assert.equal(resources.get("ecosystem_memory").provider, "omnicede");
+  assert.deepEqual(resources.get("ecosystem_memory").offers, ["organisational_context", "engineering_history"]);
+  assert.equal(resources.get("engine_runtime_state").provider, "neon");
+  assert.deepEqual(resources.get("engine_runtime_state").offers, ["runtime_state_continuity"]);
+  assert.equal(resources.get("ecosystem_memory").spec.expectedObservation.type, "omnicede_memory_state");
+  assert.equal(resources.get("engine_runtime_state").spec.expectedObservation.type, "neon_memory_state");
 });
