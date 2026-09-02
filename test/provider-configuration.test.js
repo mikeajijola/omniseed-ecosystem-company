@@ -65,6 +65,20 @@ test("production reconciliation resolves and installs exact declared Provider re
   const { declaredProviderRevision } = await import("../scripts/provider-revisions.mjs");
   assert.equal(declaredProviderRevision(parseOmniform(company), "github"), revision);
   assert.equal(declaredProviderRevision(parseOmniform(company), "google"), "a94e6101214d807897ca701e5b96050d7de054d7");
+  const parsed = parse(company);
+  const lily = parsed.spec.resources.agents.find(item => item.id === "lily");
+  const os = parsed.spec.resources.connectors.find(item => item.id === "omniseed_os");
+  assert.match(workflow, new RegExp(`repository: mikeajijola/omniseed-provider-vercel, ref: ${lily.spec.runtime.providerRevision}`));
+  assert.equal(lily.spec.runtime.providerRevision, os.spec.providerRevision);
+});
+
+test("canonical main automatically plans without receiving Provider mutation credentials", async () => {
+  const workflow = await readFile(new URL("../.github/workflows/reconcile.yml", import.meta.url), "utf8");
+  assert.match(workflow, /push:\n\s+branches: \[main\]/);
+  assert.match(workflow, /github\.event_name == 'push' && 'plan'/);
+  assert.match(workflow, /github\.event_name == 'push' && 'production-planning'/);
+  assert.match(workflow, /github\.event_name == 'workflow_dispatch' && secrets\.VERCEL_TOKEN/);
+  assert.match(workflow, /github\.event_name == 'workflow_dispatch' && secrets\.NEON_API_KEY/);
 });
 
 test("governed approval check is exact-head, same-repository, and protected", async () => {

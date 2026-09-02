@@ -421,10 +421,12 @@ spec:
             runtimeModelConfiguration: LILY_MODEL
           implementation:
             framework: eve
+            protocol: omniseed.agent.interaction/1.0
             model: gemini-2.5-flash
+            product: Lily
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
-            revision: c1b402c9342c5b33e9c45878219c8df39400913c
+            revision: a2dd3c1934c81c3062a181d22e03412aedb7ab96
           kind: ai_agent
           organisationalIdentity: lily
           runtime:
@@ -435,12 +437,12 @@ spec:
               operation: https://omniseed-ecosystem-os.vercel.app/eve/v1/session
             project: omniseed-ecosystem-os
             provider: vercel
-            providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
+            providerRevision: c465e40a8c67e7cdd1110ffa9d181e5781d1b38c
             observationCredentialReference: LILY_RUNTIME_OBSERVATION_TOKEN
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: 2c9650c283ba0ee40e747400499c7090460ff499
+              revision: 52fca494874681574399bf2b8ab1a9c9dddecec2
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -490,13 +492,14 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: 2c9650c283ba0ee40e747400499c7090460ff499
+            implementationRevision: 52fca494874681574399bf2b8ab1a9c9dddecec2
             provider: neon
             service: postgresql
           environment: production
           expectedEndpoints:
             company: https://omniseed-ecosystem-os.vercel.app/api/company
-            health: https://omniseed-ecosystem-os.vercel.app/api/health
+            health: https://omniseed-ecosystem-os.vercel.app/health
+            info: https://omniseed-ecosystem-os.vercel.app/info
             operations: https://omniseed-ecosystem-os.vercel.app
           optional: true
           implementation:
@@ -504,14 +507,14 @@ spec:
             version: 1.0.0-alpha.39
           project: omniseed-ecosystem-os
           provider: vercel
-          providerRevision: 40696040fb9fe954afe271189063a13f9aeec1b9
+          providerRevision: c465e40a8c67e7cdd1110ffa9d181e5781d1b38c
           services:
             - functions
             - deployment
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 2c9650c283ba0ee40e747400499c7090460ff499
+            revision: 52fca494874681574399bf2b8ab1a9c9dddecec2
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
@@ -519,7 +522,7 @@ spec:
         offers: [governed_change_process]
         spec:
           provider: github
-          providerRevision: b1e1a42883a2c0f3e439d340eff0816ca02d3025
+          providerRevision: 275035a22ff9ff7f2b13236056da0034c87ae0df
           products: [Repositories, Pull Requests, Checks, Apps/API]
           repository: mikeajijola/omniseed-ecosystem-company
           baseBranch: main
@@ -550,7 +553,7 @@ spec:
             repository: https://github.com/mikeajijola/omniseed-ecosystem-company.git
             branch: main
             path: omniform.yaml
-          triggers: [governed_dispatch]
+          triggers: [canonical_main_merged, governed_dispatch]
     policies:
       - { id: lily_authority, name: Lily Authority, provider: omniseed, offers: [stewardship_authority], spec: { deny: [ approve, self_escalate, direct_provider_mutation ], allow: [ read, propose, apply_after_independent_approval, provider_merge_after_policy, observe ] } }
       - { id: review_policy, name: Required Review, provider: omniseed, offers: [required_review], spec: { pullRequestRequired: true } }
