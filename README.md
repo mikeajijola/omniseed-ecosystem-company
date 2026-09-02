@@ -32,8 +32,9 @@ state service, and invokes ordinary observation so desired and observed
 revisions remain separate. Bootstrap refuses a non-empty durable company state;
 all later runs use that durable state directly.
 
-After bootstrap, dispatch `plan` against the exact approved `main` revision and
-review the persisted plan ID, hash, and resource actions. A separate protected
+After bootstrap, every push to canonical `main` automatically runs `plan`
+against the exact merged revision and persists the resulting plan. Review its
+exact ID, hash, and resource actions. A separate protected
 `apply` dispatch must supply that exact ID and hash plus the explicitly approved
 resource IDs. The runner loads the reviewed plan from durable Engine state,
 records approval under the declared operator identity, invokes the ordinary
@@ -75,13 +76,23 @@ deployment-readiness wait while remaining bounded; the local Engine protocol's
 two-second test default is intentionally not used as a production deployment
 contract.
 
-The `production` environment is the human approval boundary for bootstrap and
-ordinary apply dispatches. The workflow actor is recorded as a principal of the declared
+The unprotected `production-planning` environment supplies only the durable
+state endpoint and state token needed to bind an exact merged revision and
+persist a plan. The automatic path is forced to `plan`, receives no Provider
+mutation credentials, and cannot approve or apply. The `production` environment
+is the human approval boundary for bootstrap and ordinary apply dispatches. The
+workflow actor is recorded as a principal of the declared
 `operator_identities` resource; the GitHub Actions reconciler has `plan.apply`
 but deliberately lacks `plan.approve`, so it cannot approve its own plan.
 
 Omnicede is included only when `OMNICEDE_DATABASE_PATH` names genuinely durable mounted storage. The workflow does not label an ephemeral Actions SQLite file as installed production memory.
 
-Provider credentials remain in the runtime environment used by their processes; they are not stored in Omniform or printed by the runner. Automatic reconciliation on merge is intentionally not claimed yet. It should be enabled only after the production state service and required Provider implementations have been observed working.
+Provider credentials remain in the runtime environment used by their processes; they are not stored in Omniform or printed by the runner. Enabling the automatic path requires configuring `OMNISEED_STATE_ENDPOINT` and `OMNISEED_STATE_TOKEN` in `production-planning` without a deployment approval rule. This repository proves the forced plan-only trigger and authority separation; a successful production run and persisted plan remain live evidence.
 
 The production Lily and OmniSeed OS resources declare one shared `omniseed-ecosystem-os` Vercel project and the same immutable OmniSeed OS source revision. Lily remains a distinct organisational Agent implemented with Eve; sharing a deployment does not collapse Lily into the interface. The Company Change workflow separately pins the GitHub Provider implementation, repository scope, server-side credential reference, and governed merge policy. Re-running reconciliation from the same Omniform therefore produces the same topology apart from secret values and Provider-assigned resource identities.
+
+The non-production [portable Agent Company Change fixture](docs/fixtures/portable-agent-company-change.json)
+selects a second product/framework through the same declared interaction protocol
+while leaving the supplying Vercel Provider and Agent resource ID unchanged. It
+is sandbox-only and marked for reversion; it is deterministic contract evidence,
+not proof that a second runtime has been deployed or accepted.

@@ -1,0 +1,20 @@
+{
+  "environment": "sandbox",
+  "reason": "Exercise declared Agent portability without replacing the production steward.",
+  "patch": [
+    { "op": "replace", "path": "/spec/resources/agents/0/name", "value": "Portable Agent Sandbox Fixture" },
+    {
+      "op": "replace",
+      "path": "/spec/resources/agents/0/spec/implementation",
+      "value": {
+        "framework": "json-turn",
+        "model": "sandbox-model",
+        "product": "Portable Agent Fixture",
+        "protocol": "omniseed.agent.interaction/1.0",
+        "repository": "https://github.com/mikeajijola/omniseed-agent-fixture.git",
+        "revision": "0000000000000000000000000000000000000001"
+      }
+    }
+  ],
+  "retain": false
+}

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { MemoryStateStore, ReferenceProvider } from "@omniseed/engine";
 import { loadOmniform } from "@omniseed/omniform";
 import { formatReconciliationError, runReconciliation } from "../scripts/reconcile.mjs";
@@ -32,6 +33,8 @@ test("Lily and OmniSeed OS share one immutable Vercel runtime without collapsing
   assert.equal(lily.spec.implementation.repository, "https://github.com/mikeajijola/omniseed-lily.git");
   assert.notEqual(lily.spec.implementation.repository, lily.spec.runtime.source.repository);
   assert.equal(lily.spec.implementation.framework, "eve");
+  assert.equal(lily.spec.implementation.product, "Lily");
+  assert.equal(lily.spec.implementation.protocol, "omniseed.agent.interaction/1.0");
   const inference = declaration.spec.resources.inference?.find(item => item.id === "lily_inference");
   if (inference) {
     assert.equal(lily.spec.implementation.model, inference.spec.model, "the Agent must use its independently declared inference primitive");
@@ -50,6 +53,21 @@ test("Lily and OmniSeed OS share one immutable Vercel runtime without collapsing
   const interfacePolicy = declaration.spec.resources.policies.find(item => item.id === "interface_policy");
   assert.equal(interfacePolicy.spec.stewardChat, "public");
   assert.equal(interfacePolicy.spec.mutationsRequireGovernedOperations, true);
+});
+
+test("the sandbox Agent Company Change swaps only implementation details behind the compatible protocol", async () => {
+  const declaration = await loadOmniform(new URL("../omniform.yaml", import.meta.url));
+  const fixture = JSON.parse(await readFile(new URL("../docs/fixtures/portable-agent-company-change.json", import.meta.url), "utf8"));
+  const lily = declaration.spec.resources.agents.find(item => item.id === "lily");
+  const implementation = fixture.patch.find(item => item.path === "/spec/resources/agents/0/spec/implementation")?.value;
+  assert.equal(fixture.environment, "sandbox");
+  assert.equal(fixture.retain, false);
+  assert.equal(lily.provider, "vercel");
+  assert.equal(implementation.protocol, lily.spec.implementation.protocol);
+  assert.notEqual(implementation.framework, lily.spec.implementation.framework);
+  assert.notEqual(implementation.product, lily.spec.implementation.product);
+  assert.equal(fixture.patch.some(item => item.path.includes("/provider")), false);
+  assert.equal(fixture.patch.some(item => item.path.includes("/authority")), false);
 });
 
 test("repeat planning against one durable state returns the exact same plan and Activity", async () => {
