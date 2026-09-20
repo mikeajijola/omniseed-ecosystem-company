@@ -545,7 +545,7 @@ spec:
         spec:
           implementation:
             enginePackage: "@omniseed/engine"
-            engineVersion: 1.0.0-alpha.20
+            engineVersion: 1.0.0-alpha.21
             lifecycle: [load, compile, plan, approve, apply, observe, persist, compile]
             product: GitHub Actions
             sourceRevision: 9713dd4dfcbb36de9f21524f1ba4203f3b0fe41b
