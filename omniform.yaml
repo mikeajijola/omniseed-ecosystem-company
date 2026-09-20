@@ -426,7 +426,7 @@ spec:
             product: Lily
             repository: https://github.com/mikeajijola/omniseed-lily.git
             repositoryId: 1335525492
-            revision: 5f90bec10bd8b39b64679e825277c0fdd2508299
+            revision: 87d8e368b9ec85b8c68856a9f905262824fb1b2e
           kind: ai_agent
           organisationalIdentity: lily
           runtime:
@@ -442,7 +442,7 @@ spec:
             source:
               repository: https://github.com/mikeajijola/omniseedos.git
               repositoryId: 1326313594
-              revision: 60906a9c85ecb914fed8582afda8335677f24cc2
+              revision: 3c04be096df9b2b5ab7c79391227bfbc43a112ce
             secretReferences:
               - DATABASE_URL
               - OMNISEED_OPERATION_TOKEN
@@ -492,7 +492,7 @@ spec:
               - OMNISEED_OPERATOR_TOKEN
               - OMNISEED_OPERATION_TOKEN
             endpoint: https://omniseed-ecosystem-os.vercel.app/api/state
-            implementationRevision: 60906a9c85ecb914fed8582afda8335677f24cc2
+            implementationRevision: 3c04be096df9b2b5ab7c79391227bfbc43a112ce
             provider: neon
             service: postgresql
           environment: production
@@ -514,7 +514,7 @@ spec:
           source:
             repository: https://github.com/mikeajijola/omniseedos.git
             repositoryId: 1326313594
-            revision: 60906a9c85ecb914fed8582afda8335677f24cc2
+            revision: 3c04be096df9b2b5ab7c79391227bfbc43a112ce
     workflows:
       - id: company_change_workflow
         name: Company Change Workflow
