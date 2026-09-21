@@ -7,6 +7,7 @@ const realisedCapabilityIds = new Set([
   "validate_ecosystem_conformance",
   "operate_omniseed_ecosystem",
   "reconcile_omniseed_ecosystem"
+  ,"engineer_and_release_omniseed_products"
 ]);
 
 export async function capabilityProjectionFixture() {
