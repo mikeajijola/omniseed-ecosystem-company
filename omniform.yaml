@@ -15,6 +15,22 @@ spec:
   stewardship:
     capability: steward_omniseed_ecosystem
     realisation: lily_stewardship
+    autonomy:
+      mode: autonomous_safe
+      activeFrom: 2026-09-21T00:00:00Z
+      expiresAt: 2027-09-21T00:00:00Z
+      stateReference: stewardship_control
+      triggers: [owner_request, interval, observed_drift, capability_gap, failed_operation]
+      limits: { concurrency: 2, dailyChanges: 5, repairRounds: 2, cost: 25, actions: 20 }
+      gates: { validation: true, independentReview: true, unchangedHead: true, successfulChecks: true }
+      protectedCategories: [authority, governance, secrets, destructive_actions, spending_limits, autonomy_policy]
+      duties:
+        - { actor: lily, permissions: [propose] }
+        - { actor: operator_identities, permissions: [approve] }
+        - { actor: company_change_workflow, permissions: [merge] }
+        - { actor: reconciler_identity, permissions: [apply] }
+        - { actor: company_observer, permissions: [observe] }
+      afterMerge: { reconcile: true, observe: true }
   outcomes:
     - id: truthful_self_hosting
       description: OmniSeed can explain with evidence how its own ecosystem company is run.
@@ -565,6 +581,17 @@ spec:
             branch: main
             path: omniform.yaml
           triggers: [canonical_main_merged, governed_dispatch]
+      - id: stewardship_scheduler
+        name: Bounded Stewardship Scheduler
+        provider: github
+        offers: []
+        spec:
+          product: GitHub Actions
+          schedule: interval
+          target: declared_steward_company_work
+          authentication: server_bound_operation_identity
+          directProviderCredentials: false
+          respectsProfileState: true
       - id: product_release_workflow
         name: Governed Product Release Workflow
         provider: github
@@ -597,6 +624,16 @@ spec:
           requireExactPlanApproval: true
           forbidSelfApproval: true
           observeAfterApply: true
+      - id: stewardship_control
+        name: Stewardship Runtime Control
+        provider: omniseed
+        offers: []
+        spec:
+          defaultState: disabled
+          enablement: authenticated_owner_with_finite_expiry
+          states: [disabled, enabled, paused]
+          authorityExpansion: forbidden
+          conversationIsAuthority: false
       - id: release_policy
         name: Release Quality and Authority Policy
         provider: omniseed
