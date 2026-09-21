@@ -1,0 +1,13 @@
+{
+  "intent": {"id":"omniform_alpha7","repository":"mikeajijola/omniform","sourceRevision":"25b45c9cb9610d51946b27340e9b97fc9d2695df","artifact":"@omniseed/omniform","version":"1.0.0-alpha.7","channel":"alpha","workflow":"publish.yml","expectedIntegrity":"sha512-Yi+FARxMKbFfXTK/X+Xj1YGGFizghKiximiVA49QYQwPWveeJ3MHPnMWAT8DvJ4QY+7TVNTgf1owErUlR2RLaw=="},
+  "evidence": {
+    "repository":"mikeajijola/omniform","sourceRevision":"25b45c9cb9610d51946b27340e9b97fc9d2695df","artifact":"@omniseed/omniform","version":"1.0.0-alpha.7",
+    "source":{"reviewed":true,"checks":"successful","pullRequest":28},
+    "approval":{"ownerAuthorized":true,"exactIntent":true,"evidence":"https://github.com/mikeajijola/omniform/issues/27#issuecomment-5656513437"},
+    "workflow":{"runId":34749275361,"filename":"publish.yml","headSha":"25b45c9cb9610d51946b27340e9b97fc9d2695df","actor":"mike-agent-control-runner[bot]","event":"workflow_dispatch","conclusion":"success","url":"https://github.com/mikeajijola/omniform/actions/runs/34749275361"},
+    "registry":{"name":"@omniseed/omniform","version":"1.0.0-alpha.7","channel":"alpha","gitHead":"25b45c9cb9610d51946b27340e9b97fc9d2695df","integrity":"sha512-Yi+FARxMKbFfXTK/X+Xj1YGGFizghKiximiVA49QYQwPWveeJ3MHPnMWAT8DvJ4QY+7TVNTgf1owErUlR2RLaw==","shasum":"69b4530b60b4de71e9085fef3b1eed4ef8c7c1a8","attestationUrl":"https://registry.npmjs.org/-/npm/v1/attestations/@omniseed%2fomniform@1.0.0-alpha.7"},
+    "provenance":{"predicateType":"https://slsa.dev/provenance/v1","repository":"mikeajijola/omniform","sourceRevision":"25b45c9cb9610d51946b27340e9b97fc9d2695df","workflow":"publish.yml"},
+    "consumer":{"registryConsumer":true,"resolvedVersion":"1.0.0-alpha.7","contractValid":true,"negativeContractRejected":true,"evidence":"https://github.com/mikeajijola/omniform/issues/27#issuecomment-5656513437"},
+    "observedAt":"2026-09-21T18:00:00.000Z"
+  }
+}

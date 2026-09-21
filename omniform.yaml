@@ -126,6 +126,7 @@ spec:
         - { id: verified_release_process, primitiveFamily: workflows }
         - { id: release_quality_policy, primitiveFamily: policies }
         - { id: release_observation, primitiveFamily: observations }
+      realisations: [omniform_alpha_release]
     # Provider ecosystem
     - id: grow_and_manage_provider_ecosystem
       name: Grow and Manage Provider Ecosystem
@@ -387,6 +388,16 @@ spec:
         - { resource: engine_runtime_state, supplies: [runtime_state_continuity] }
         - { resource: reconciliation_observer, supplies: [reconciliation_observation] }
         - { resource: reconciler_identity, supplies: [reconciler_identity] }
+    - id: omniform_alpha_release
+      name: Governed Omniform alpha release
+      capability: engineer_and_release_omniseed_products
+      participants:
+        - { resource: ecosystem_contributors, supplies: [product_engineering_agency] }
+        - { resource: engineering_skills, supplies: [product_engineering_and_release] }
+        - { resource: github_repositories, supplies: [product_source_and_distribution_access] }
+        - { resource: product_release_workflow, supplies: [verified_release_process] }
+        - { resource: release_policy, supplies: [release_quality_policy] }
+        - { resource: release_observer, supplies: [release_observation] }
   resources:
     agents:
       - id: lily
@@ -459,13 +470,13 @@ spec:
               subject: omniseed-os:omniseed_ecosystem
             services:
               - functions
-      - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency], spec: { kind: people_and_agents } }
+      - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency, product_engineering_agency], spec: { kind: people_and_agents } }
     skills:
       - { id: stewardship_skills, name: Stewardship Skills, provider: omniseed, offers: [company_reasoning], spec: { abilities: [inspect, reason, explain, propose, delegate, escalate] } }
-      - { id: engineering_skills, name: Software Engineering Skills, provider: omniseed, offers: [software_engineering] }
+      - { id: engineering_skills, name: Software Engineering Skills, provider: omniseed, offers: [software_engineering, product_engineering_and_release] }
       - { id: conformance_runner, name: Ecosystem Conformance Runner, provider: omniseed, offers: [conformance_skill] }
     connectors:
-      - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access] }
+      - { id: github_repositories, name: Public Repository Boundary, provider: github, offers: [repository_access, public_repository_access, product_source_and_distribution_access] }
       - id: omniseed_os
         name: OmniSeed OS
         provider: vercel
@@ -554,6 +565,25 @@ spec:
             branch: main
             path: omniform.yaml
           triggers: [canonical_main_merged, governed_dispatch]
+      - id: product_release_workflow
+        name: Governed Product Release Workflow
+        provider: github
+        offers: [verified_release_process]
+        risk: high
+        spec:
+          outcome: release_product_artifact
+          intent:
+            repository: mikeajijola/omniform
+            sourceRevision: 25b45c9cb9610d51946b27340e9b97fc9d2695df
+            artifact: "@omniseed/omniform"
+            version: 1.0.0-alpha.7
+            channel: alpha
+            workflow: publish.yml
+            expectedIntegrity: "sha512-Yi+FARxMKbFfXTK/X+Xj1YGGFizghKiximiVA49QYQwPWveeJ3MHPnMWAT8DvJ4QY+7TVNTgf1owErUlR2RLaw=="
+          mutation:
+            approval: owner_exact_intent
+            stablePromotion: forbidden
+            unrelatedTargets: forbidden
     policies:
       - { id: lily_authority, name: Lily Authority, provider: omniseed, offers: [stewardship_authority], spec: { deny: [ approve, self_escalate, direct_provider_mutation ], allow: [ read, propose, apply_after_independent_approval, provider_merge_after_policy, observe ] } }
       - { id: review_policy, name: Required Review, provider: omniseed, offers: [required_review], spec: { pullRequestRequired: true } }
@@ -567,6 +597,20 @@ spec:
           requireExactPlanApproval: true
           forbidSelfApproval: true
           observeAfterApply: true
+      - id: release_policy
+        name: Release Quality and Authority Policy
+        provider: omniseed
+        offers: [release_quality_policy]
+        spec:
+          requireExactSourceReview: true
+          requireOwnerApprovalForPublish: true
+          forbidSelfApproval: true
+          requireRegistryReadback: true
+          requireProvenance: true
+          requireIntegrityMatch: true
+          requireCleanConsumer: true
+          workflowSuccessIsNotPass: true
+          stablePromotionSeparatelyApproved: true
     observations:
       - { id: company_observer, name: Company State Observer, provider: omniseed, offers: [company_state_observation] }
       - { id: change_observer, name: Change Observer, provider: omniseed, offers: [change_observation] }
@@ -578,6 +622,14 @@ spec:
         offers: [reconciliation_observation]
         spec:
           measures: [desired_revision, observed_revision, provider_state, drift, evidence]
+      - id: release_observer
+        name: Product Release Observer
+        provider: omniseed
+        offers: [release_observation]
+        spec:
+          measures: [source_revision, workflow_run, registry_version, integrity, provenance, channel, clean_consumer]
+          outcomes: [PASS, FAIL, INDETERMINATE]
+          reconcile: reobserve_before_retry_or_replan
     memory:
       - id: ecosystem_memory
         name: Ecosystem Organisational Memory
@@ -641,4 +693,5 @@ spec:
     - { id: get_plan, input: {}, output: {}, approval: none, mutation: false, capability: reconcile_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Inspect an exact persisted reconciliation plan and its independent approval, permissions: [ plan.read ] }
     - { id: apply_plan, input: {}, output: {}, approval: required, mutation: true, capability: reconcile_omniseed_ecosystem, interfaces: [ ui, api, cli, agent, machine ], description: Apply only actions from an exact persisted and approved reconciliation plan, permissions: [ plan.apply ] }
     - { id: observe_company, input: {}, output: {}, approval: policy, mutation: true, capability: reconcile_omniseed_ecosystem, interfaces: [ lily, ui, api, cli, agent, machine ], description: Observe deployed primitive resources through their selected Providers and persist evidence without changing desired state, permissions: [ state.reconcile ] }
+    - { id: observe_product_release, input: {}, output: {}, approval: none, mutation: false, capability: engineer_and_release_omniseed_products, interfaces: [ lily, ui, api, cli, agent, machine ], description: "Evaluate source, workflow, registry, provenance, channel and clean-consumer evidence for an exact release intent", permissions: [ release.read ] }
     - { id: bind_company, input: {}, output: {}, approval: policy, mutation: true, capability: reconcile_omniseed_ecosystem, interfaces: [ api, cli, machine ], description: Bind this runtime to an exact approved merged desired revision without copying the company definition into runtime state, permissions: [ company.bind ] }

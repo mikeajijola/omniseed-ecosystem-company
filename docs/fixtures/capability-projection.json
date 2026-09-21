@@ -11,7 +11,7 @@
     { "id": "reconcile_omniseed_ecosystem", "name": "Reconcile OmniSeed Ecosystem", "state": "realised", "coveredRequirements": 7, "totalRequirements": 7 },
     { "id": "set_company_strategy_and_governance", "name": "Set Company Strategy and Governance", "state": "missing", "coveredRequirements": 0, "totalRequirements": 6 },
     { "id": "manage_product_and_roadmap", "name": "Manage Product and Roadmap", "state": "partial", "coveredRequirements": 2, "totalRequirements": 6 },
-    { "id": "engineer_and_release_omniseed_products", "name": "Engineer and Release OmniSeed Products", "state": "missing", "coveredRequirements": 0, "totalRequirements": 6 },
+    { "id": "engineer_and_release_omniseed_products", "name": "Engineer and Release OmniSeed Products", "state": "realised", "coveredRequirements": 6, "totalRequirements": 6 },
     { "id": "grow_and_manage_provider_ecosystem", "name": "Grow and Manage Provider Ecosystem", "state": "missing", "coveredRequirements": 0, "totalRequirements": 6 },
     { "id": "govern_omniseed_architecture", "name": "Govern OmniSeed Architecture", "state": "missing", "coveredRequirements": 0, "totalRequirements": 6 },
     { "id": "conduct_research_and_experiments", "name": "Conduct Research and Experiments", "state": "missing", "coveredRequirements": 0, "totalRequirements": 6 },
@@ -30,5 +30,5 @@
     { "id": "measure_business_and_manage_knowledge", "name": "Measure Business and Manage Knowledge", "state": "missing", "coveredRequirements": 0, "totalRequirements": 7 },
     { "id": "respond_to_incidents_and_ensure_continuity", "name": "Respond to Incidents and Ensure Continuity", "state": "missing", "coveredRequirements": 0, "totalRequirements": 8 }
   ],
-  "summary": { "realised": 5, "partial": 1, "missing": 19 }
+  "summary": { "realised": 6, "partial": 1, "missing": 18 }
 }
