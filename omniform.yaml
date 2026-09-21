@@ -369,7 +369,7 @@ spec:
       name: Engine development, review, and release
       capability: maintain_omniseed_engine
       participants:
-        - { resource: ecosystem_contributors, supplies: [engineering_agency] }
+        - { resource: lily, supplies: [engineering_agency] }
         - { resource: engineering_skills, supplies: [software_engineering] }
         - { resource: github_repositories, supplies: [repository_access] }
         - { resource: github_change_workflow, supplies: [software_change_manage] }
@@ -408,7 +408,7 @@ spec:
       name: Governed Omniform alpha release
       capability: engineer_and_release_omniseed_products
       participants:
-        - { resource: ecosystem_contributors, supplies: [product_engineering_agency] }
+        - { resource: lily, supplies: [product_engineering_agency] }
         - { resource: engineering_skills, supplies: [product_engineering_and_release] }
         - { resource: github_repositories, supplies: [product_source_and_distribution_access] }
         - { resource: product_release_workflow, supplies: [verified_release_process] }
@@ -419,7 +419,7 @@ spec:
       - id: lily
         name: Lily
         provider: vercel
-        offers: [stewardship_agency]
+        offers: [stewardship_agency, engineering_agency, product_engineering_agency]
         risk: high
         spec:
           authority:
@@ -486,7 +486,6 @@ spec:
               subject: omniseed-os:omniseed_ecosystem
             services:
               - functions
-      - { id: ecosystem_contributors, name: Ecosystem Contributors, offers: [engineering_agency, product_engineering_agency], spec: { kind: people_and_agents } }
     skills:
       - { id: stewardship_skills, name: Stewardship Skills, provider: omniseed, offers: [company_reasoning], spec: { abilities: [inspect, reason, explain, propose, delegate, escalate] } }
       - { id: engineering_skills, name: Software Engineering Skills, provider: omniseed, offers: [software_engineering, product_engineering_and_release] }
