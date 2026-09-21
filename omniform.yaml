@@ -548,7 +548,7 @@ spec:
         offers: [governed_change_process]
         spec:
           provider: github
-          providerRevision: 275035a22ff9ff7f2b13236056da0034c87ae0df
+          providerRevision: e08d637c78c1807a5838b7b8cf925214ab81fa2e
           products: [Repositories, Pull Requests, Checks, Apps/API]
           repository: mikeajijola/omniseed-ecosystem-company
           baseBranch: main
